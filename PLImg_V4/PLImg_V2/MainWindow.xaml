@@ -34,6 +34,12 @@
                 <Button x:Name="btnSetting" Content="Setting"  FontSize="13" Margin="15,5,7,5" Click="btnSetting_Click" />
                 <Button x:Name="btnFunc"    Content="Stage Control"    FontSize="13" Margin="15,5,15,5" Click="btnFunc_Click"/>
             </UniformGrid>
+
+            <TabControl>
+                
+                
+            </TabControl>
+            
             
             <!--메인 메뉴-->
             <Grid Grid.Row="1" Width="370" Height="495" Margin="5">

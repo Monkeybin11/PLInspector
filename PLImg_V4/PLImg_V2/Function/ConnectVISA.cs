@@ -7,7 +7,7 @@ using NationalInstruments.VisaNS;
 
 namespace PLImg_V2
 {
-    class ConnectVISA : IDalsaCamera.IConnectVISA
+    class ConnectVISA 
     {
         public void Connect2VISA(ref MessageBasedSession mbsession, string path)
         {

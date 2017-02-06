@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PLImg_V2
 {
-    public class GrabMana : IDalsaCamera.IGrabMana
+    public class GrabMana 
     {
         string DirPath;
         public GrabMana(string dirpath)

@@ -63,9 +63,9 @@ namespace PLImg_V2
         public MainWindow()
         {
             InitializeComponent();
-            InitConnectPort();
-            InitMainMod();
-            InitChart();
+            //InitConnectPort();
+            //InitMainMod();
+            //InitChart();
             InitImgBox();
             SetImgBoxStretch();
             DataContext = this;
@@ -567,10 +567,10 @@ namespace PLImg_V2
 
         #region window Event 
         private void MetroWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e ) {
-            ModMain.DisableStage( 0 );
-            ModMain.DisableStage( 1 );
-            ModMain.DisableStage( 2 );
-            ModMain.RStageClose();
+            //ModMain.DisableStage( 0 );
+            //ModMain.DisableStage( 1 );
+            //ModMain.DisableStage( 2 );
+            //ModMain.RStageClose();
         }
         #endregion
 

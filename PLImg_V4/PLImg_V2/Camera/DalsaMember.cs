@@ -6,7 +6,7 @@ using DALSA.SaperaLT.SapClassBasic;
 
 namespace PLImg_V2
 {
-    public class DalsaMember : IDalsaCamera.IMemberDefine
+    public class DalsaMember 
     {
         public  SapLocation     ServerLocation  { get;set; }
         public  SapAcqDevice    AcqDevice       { get;set; }

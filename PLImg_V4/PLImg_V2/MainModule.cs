@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using IDalsaCamera;
 using ISigmaKokiStage;
 using DALSA.SaperaLT.SapClassBasic;
 using System.Windows.Forms;
@@ -12,7 +11,6 @@ using Emgu.CV.Util;
 using Accord.Math;
 using System.Threading.Tasks;
 using NationalInstruments.VisaNS;
-using IDctXYZStage;
 
 
 namespace PLImg_V2
@@ -20,7 +18,7 @@ namespace PLImg_V2
     enum GrabStatus { Frea,Grab }
     enum ScanDirection { Forward,Back }
 
-    enum ScanState { Start, Pause, Stop, Wait}
+    //enum ScanState { Start, Pause, Stop, Wait}
 
     public delegate void TransbyteArr(byte[] imgarr);
     public delegate void TransImgArr(Image<Gray,Byte> img);
@@ -49,11 +47,11 @@ namespace PLImg_V2
         MessageBasedSession   MbSession       ;
         AFCalc                AFMeasrue       ;
         
-        IGrabMana             GrabM           ;
-        IMemberDefine         DalsaMemObj     ;
+        GrabMana              GrabM           ;
+        DalsaMember           DalsaMemObj     ;
         GrabStatus            StatusGrab      ;
         ScanState             ScanStatus      ;
-        ICameraSetting        CameraSet       ;
+        CameraSetting         CameraSet       ;
         SigmaRStageControl    RStageController;
         AcsContol             AcsXYZControl   ;
 
@@ -73,7 +71,7 @@ namespace PLImg_V2
             DalsaMemObj              = new DalsaMember()        ;
             GrabM                    = new GrabMana(ImgBasePath);
             CameraSet                = new CameraSetting()      ;
-            IConnection DalsaConnect = new Connection()         ;
+            Connection DalsaConnect  = new Connection()         ;
             AFMeasrue                = new AFCalc()             ;
             DataFullScan             = new FullScanData()       ;
             AcsXYZControl             = new AcsContol()          ;
@@ -501,7 +499,7 @@ namespace PLImg_V2
             ProfileTimer.Tick += new EventHandler(ProfileEventMethod);
         }
 
-        bool CreateDeviceMana(IConnection connectModule)
+        bool CreateDeviceMana(Connection connectModule)
         {
             try
             {

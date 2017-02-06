@@ -10,7 +10,7 @@ namespace PLImg_V2
 {
     delegate void ConnectSeq();
 
-    public class Connection : IDalsaCamera.IConnection
+    public class Connection 
     {
         ConnectSeq connectSeq;
 

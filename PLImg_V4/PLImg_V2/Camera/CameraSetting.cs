@@ -7,7 +7,7 @@ using NationalInstruments.VisaNS;
 
 namespace PLImg_V2
 {
-    public class CameraSetting : IDalsaCamera.ICameraSetting
+    public class CameraSetting 
     {
         public void SetExposureTime(MessageBasedSession mbSession, double time)
         {

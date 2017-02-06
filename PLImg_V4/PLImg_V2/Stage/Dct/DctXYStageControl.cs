@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace PLImg_V2
 {
-    public class DctXYStageControl : IDctXYZStage.IXYStageOrder
+    public class DctXYStageControl 
     {
         MessageBasedSession Connector;
         public string MovePosSetCommand { get { return "A:1{0}P{1}"; } set {; } }
