@@ -9,33 +9,36 @@ using DALSA.SaperaLT.SapClassBasic;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Accord.Math;
+using MachineControl.MathClac;
 
 namespace PLImg_V2
 {
     public delegate void TferbyteArr( byte[] imgarr );
     public delegate void TferImgArr( Image<Gray , Byte> img );
-    public delegate void TferNumber( int num );
-    public delegate void TferDoubleNumber( double num );
     public delegate void TferScanStatus();
     public delegate void TferSplitImgArr( Image<Gray , Byte> img , int lineNum , int unitNum );
-    public delegate void TferLineBuffNum( int linenum , int unitnum );
     public delegate void TferFeedBackPos( double[] XYZPos );
-
+    public delegate void TferNumber( double num );
+    
     public enum ScanMode { MultiLine, SingleLine };
     enum ScanState { Start, Pause, Stop, Wait }
 
     public class Core
     {
         #region Event
-        public event TferImgArr        evtRealimg    ;
-        public event TferSplitImgArr   evtMapImg     ;
+        public event TferImgArr        evtRealimg   ;
+        public event TferSplitImgArr   evtMapImg    ;
         public event TferFeedBackPos   evtFedBckPos ;
+        public event TferScanStatus    evtScanStart ;
+        public event TferScanStatus    evtScanEnd   ;
+        public event TferNumber        evtSV        ;     
         #endregion  
 
 
-        DalsaPiranha3_12k Cam = new DalsaPiranha3_12k();
-        AcsCtrlXYZ Stg        = new AcsCtrlXYZ();
-        ScanInfo Info         = new ScanInfo();
+        public DalsaPiranha3_12k Cam = new DalsaPiranha3_12k();
+        public AcsCtrlXYZ Stg        = new AcsCtrlXYZ();
+        public ScanInfo Info         = new ScanInfo();
+        Indicator Idc = new Indicator();
         ScanState ScanStatus = ScanState.Wait;
         int                   BuffCount       ;
         int                   LineCount       ;
@@ -92,6 +95,8 @@ namespace PLImg_V2
 
                 default:
                     evtRealimg( FnBuff2Img(  Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] )( FullBuffdata() , 1) );
+                    var zscore = Idc.Zscore( SingleBuffdata().Cast<double>().ToArray<double>() );
+                    Task.Run(()=> evtSV( Idc.Variance( zscore() )() ) );
                     break;
             }
         }
@@ -246,6 +251,17 @@ namespace PLImg_V2
 
 
         #endregion
+
+        #region indicator
+        double SV(double[] input) {
+            var zscore = Idc.Zscore(input);
+            var vari = Idc.Variance(zscore());
+            return vari();
+
+        }
+
+        #endregion
+
 
         #region Minor
         public Action<ScanMode> ScanInfoSet(

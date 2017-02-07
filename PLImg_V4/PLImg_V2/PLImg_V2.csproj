@@ -185,7 +185,6 @@
     </ApplicationDefinition>
     <Compile Include="NewF\Core.cs" />
     <Compile Include="Data\ConnectionData.cs" />
-    <Compile Include="NewF\Info.cs" />
     <Compile Include="NewF\ScanInfo.cs" />
     <Compile Include="NewF\Setting.cs" />
     <Compile Include="Data\FullScanData.cs" />
@@ -252,10 +251,6 @@
     <Resource Include="License-LGPL.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ISigmaKokiStage\ISigmaKokiStage.csproj">
-      <Project>{15b63a69-8b79-49a7-b950-6ee1e4f9b076}</Project>
-      <Name>ISigmaKokiStage</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MachineControl\MachineControl.csproj">
       <Project>{9dba3033-eae6-4b34-8726-d43105eba984}</Project>
       <Name>MachineControl</Name>
