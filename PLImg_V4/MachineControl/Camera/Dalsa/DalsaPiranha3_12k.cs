@@ -146,8 +146,6 @@ namespace MachineControl.Camera.Dalsa
         {
             xfer.XferNotify += new SapXferNotifyHandler( evtFunc );
             xfer.XferNotifyContext = View;
-            xfer = new SapAcqToBuf( Acquisition , Buffers );
-            xfer.Pairs[0].EventType = SapXferPair.XferEventType.EndOfFrame;
             Buffers.Create();
             xfer.Create();
         }

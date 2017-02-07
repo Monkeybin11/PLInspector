@@ -20,10 +20,12 @@ namespace MachineControl.Stage.ACSController
             return act(()=> {
                 switch ( mode ) {
                     case ConnectMode.IP:
+                        Ch.CloseComm();
                         Ch.OpenCommEthernetTCP( path , Ch.ACSC_SOCKET_STREAM_PORT );
                         System.Threading.Thread.Sleep( 80 );
                         break;
                     case ConnectMode.Com:
+                        Ch.CloseComm();
                         Ch.OpenCommSerial( Convert.ToInt32( path ) , -1 );
                         System.Threading.Thread.Sleep( 80 );
                         break;
@@ -85,6 +87,7 @@ namespace MachineControl.Stage.ACSController
         }
         public Func<double> GetPos( string axis ) {
             return fun( () => {
+                var temp =Ch.GetFPosition( Axis.Values.ElementAt( Axis[axis] ) , Ch.ACSC_SYNCHRONOUS , ref pWait );
                 return Ch.GetFPosition( Axis.Values.ElementAt( Axis[axis] ) , Ch.ACSC_SYNCHRONOUS , ref pWait );
             } );
         }

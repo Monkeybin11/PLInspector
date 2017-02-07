@@ -44,7 +44,6 @@ namespace PLImg_V2
         int                   LineCount       ;
         int                   UnitCount       ;
         byte[]                ImgSrcByte      ;
-        double[]              FeedBackPos     ;
         bool                  NeedClearBuf    ;
 
         /*GFunc*/
@@ -62,6 +61,7 @@ namespace PLImg_V2
             Stg.Connect(stgPath, stgConnectMode )();
             InitFunc();
             GetFeedbackPos();
+
         }
 
         /* GFun Create */
@@ -297,15 +297,16 @@ namespace PLImg_V2
                     var xP = Stg.GetPos("X");
                     var yP = Stg.GetPos("Y");
                     var zP = Stg.GetPos("Z");
-                    evtFedBckPos( new double[3] { xP() , yP() , zP() } );
+                    var temp = new double[3] { xP() , yP() , zP() };
+                    evtFedBckPos( temp );
                     Task.Delay( 500 ).Wait();
+                    Console.WriteLine("FeedBack");
                 }
             }
             catch ( Exception ex)
             {
                 Console.WriteLine( ex.ToString() );
             }
-            
         }
 
         Func<byte[],int , Image<Gray , byte>> FnBuff2Img( int bufH, int bufW )

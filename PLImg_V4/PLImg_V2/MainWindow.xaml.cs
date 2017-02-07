@@ -40,22 +40,14 @@ namespace PLImg_V2
     public partial class MainWindow : MetroWindow
     {
         string[] XYZ = new string[3] { "X","Y","Z" };
-        string CamPath     ;
-        string XYStagePort    ;
-        string ControllerIP    ;
-        int RStagePort     ;
-        bool FeedBackOn = false;
         
         Core Core = new Core();
         public SeriesCollection seriesbox { get; set; }
         public ChartValues<int> chartV { get; set; }
-        List<int> XLabels;
-        List<int> YValue;
         ImageBox[,] ImgBoxArr;
         StageEnableState XStageState;
         StageEnableState YStageState;
         StageEnableState ZStageState;
-        byte[] SavesLineData;
 
         Action<ScanMode> SetScanInfo;
 
@@ -65,10 +57,6 @@ namespace PLImg_V2
                          -1 , -1 ,
                          ( int ) nudScanbuffNum.Value , ( int ) nudScanUnitNum.Value , ( int ) nudScanLineNum.Value ,
                          ( int ) nudScanSpeed.Value );
-
-
-
-
         }
 
         public MainWindow()
@@ -77,6 +65,10 @@ namespace PLImg_V2
             InitImgBox();
             SetImgBoxStretch();
             DataContext = this;
+            ConnectionData cd = new ConnectionData();
+            //Core.ConnectDevice( cd.CameraPath, cd.ControllerIP, cd.RStage );
+            Core.ConnectDevice( cd.CameraPath, cd.DctStagePort, cd.RStage );
+            InitMainMod();
         }
 
         #region Display
@@ -113,15 +105,6 @@ namespace PLImg_V2
         #endregion
 
         #region Init
-        void InitConnectPort( )
-        {
-            ConnectionData condata = new ConnectionData();
-            CamPath     = condata.CameraPath    ;
-            XYStagePort = condata.DctStagePort  ;
-            ControllerIP = condata.ControllerIP  ;
-            RStagePort  = condata.RStage        ;
-        }
-
         void InitMainMod( )
         {
             XStageState = StageEnableState.Enabled;
@@ -137,12 +120,6 @@ namespace PLImg_V2
 
             imgboxReal.SizeMode = PictureBoxSizeMode.StretchImage;
             InitViewWin();
-        }
-
-        void InitChart( )
-        {
-            XLabels = new List<int>();
-            YValue = new List<int>();
         }
 
         void InitImgBox()
@@ -247,6 +224,7 @@ namespace PLImg_V2
         #region Camera
         private void btnGrap_Click(object sender, RoutedEventArgs e)
         {
+            if ( Core == null ) Console.WriteLine( "null ");
             Core.Grab();
         }
         private void btnFreeze_Click( object sender, RoutedEventArgs e )
@@ -268,7 +246,7 @@ namespace PLImg_V2
         #region Stage
         // common //
         private void btnOrigin_Click( object sender, RoutedEventArgs e ) {
-            foreach ( var item in XYZ ) Core.Stg.Home( item );
+            foreach ( var item in XYZ ) Core.Stg.Home( item )();
         }
 
         // XYZStage //
@@ -282,7 +260,7 @@ namespace PLImg_V2
         }
         private void btnZMove_Click( object sender, RoutedEventArgs e )
         {
-            if(ZStageState == StageEnableState.Enabled) Core.MoveXYstg( "Z" , ( double ) nudGoZPos.Value );
+            if(ZStageState == StageEnableState.Enabled) Core.MoveZstg( ( double ) nudGoZPos.Value );
         }
 
       
@@ -307,32 +285,32 @@ namespace PLImg_V2
 
         #region Motor Enable / Disable // Done
         private void ckbXDisa_Checked( object sender, RoutedEventArgs e ) {
-            Core.Stg.Disable("X");
+            Core.Stg.Disable("X")();
             XStageState = StageEnableState.Disabled;
         }
 
         private void ckbYDisa_Checked( object sender, RoutedEventArgs e ) {
-            Core.Stg.Disable( "Y" );
+            Core.Stg.Disable( "Y" )();
             YStageState = StageEnableState.Disabled;
         }
 
         private void ckbZDisa_Checked( object sender, RoutedEventArgs e ) {
-            Core.Stg.Disable( "Z" );
+            Core.Stg.Disable( "Z" )();
             ZStageState = StageEnableState.Disabled;
         }
 
         private void ckbZDisa_Unchecked( object sender, RoutedEventArgs e ) {
-            Core.Stg.Enable( "Y" );
+            Core.Stg.Enable( "Y" )();
             ZStageState = StageEnableState.Enabled;
         }
 
         private void ckbYDisa_Unchecked( object sender, RoutedEventArgs e ) {
-            Core.Stg.Enable( "Y" );
+            Core.Stg.Enable( "Y" )();
             YStageState = StageEnableState.Enabled;
         }
 
         private void ckbXDisa_Unchecked( object sender, RoutedEventArgs e ) {
-            Core.Stg.Enable( "X" );
+            Core.Stg.Enable( "X" )();
             XStageState = StageEnableState.Enabled;
         }
         #endregion
@@ -354,9 +332,11 @@ namespace PLImg_V2
 
         #region window Event 
         private void MetroWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e ) {
-            //Core.DisableStage( 0 );
-            //Core.DisableStage( 1 );
-            //Core.DisableStage( 2 );
+            foreach ( var item in XYZ )
+            {
+                Core.Stg.Disable( item )();
+                Core.Stg.Disconnect();
+            }
             //Core.RStageClose();
         }
         #endregion
