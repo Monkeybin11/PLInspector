@@ -60,8 +60,6 @@ namespace PLImg_V2
             var stgConnectMode = MachineControl.Stage.Interface.ConnectMode.Com;
             Stg.Connect(stgPath, stgConnectMode )();
             InitFunc();
-            GetFeedbackPos();
-
         }
 
         /* GFun Create */
@@ -297,10 +295,8 @@ namespace PLImg_V2
                     var xP = Stg.GetPos("X");
                     var yP = Stg.GetPos("Y");
                     var zP = Stg.GetPos("Z");
-                    var temp = new double[3] { xP() , yP() , zP() };
-                    evtFedBckPos( temp );
+                    evtFedBckPos( new double[3] { xP(), yP(), zP() } );
                     Task.Delay( 500 ).Wait();
-                    Console.WriteLine("FeedBack");
                 }
             }
             catch ( Exception ex)

@@ -117,6 +117,7 @@ namespace PLImg_V2
             Core.evtFedBckPos     += new TferFeedBackPos( DisplayPos );
             Core.evtScanStart     += new TferScanStatus( ( ) => { Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait; } );
             Core.evtScanEnd       += new TferScanStatus( ( ) => { Mouse.OverrideCursor = null; } );
+            Task.Run(()=>Core.GetFeedbackPos());
 
             imgboxReal.SizeMode = PictureBoxSizeMode.StretchImage;
             InitViewWin();
