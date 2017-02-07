@@ -309,7 +309,39 @@ namespace PLImg_V2
 
         }
 
+        void SetDir()
+        {
+            //string dirTempPath = String.Format(ImgBasePath + DateTime.Now.ToString("MM/dd/HH/mm/ss"));
+            //CheckAndCreateFolder cacf = new CheckAndCreateFolder(dirTempPath);
+            //cacf.SettingFolder( dirTempPath );
+            //GrabM.SetDirPath( dirTempPath );
+        }
 
+        public void SaveImageData( Emgu.CV.UI.ImageBox[,] imgbox , string savepath )
+        {
+            try
+            {
+
+                for ( int i = 0 ; i < imgbox.GetLength( 0 ) ; i++ )
+                {
+                    for ( int j = 0 ; j < imgbox.GetLength( 1 ) ; j++ )
+                    {
+                        if ( imgbox[i , j].Image != null )
+                        {
+                            string temp = i.ToString( "D2" ) + "_"+j.ToString( "D3" );
+                            string outpath = System.IO.Path.Combine( savepath, temp );
+                            imgbox[i , j].Image.Save( String.Format( outpath + ".bmp" ) );
+                        }
+                    }
+                }
+
+            }
+            catch ( Exception ex )
+            {
+                Console.WriteLine( ex.ToString() );
+
+            }
+        }
 
         #endregion
     }

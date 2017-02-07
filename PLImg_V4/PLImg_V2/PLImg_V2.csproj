@@ -185,25 +185,12 @@
     </ApplicationDefinition>
     <Compile Include="NewF\Core.cs" />
     <Compile Include="Data\ConnectionData.cs" />
-    <Compile Include="Info.cs" />
+    <Compile Include="NewF\Info.cs" />
     <Compile Include="NewF\ScanInfo.cs" />
     <Compile Include="NewF\Setting.cs" />
-    <Compile Include="Stage\Dct\AcsContol.cs" />
     <Compile Include="Data\FullScanData.cs" />
-    <Compile Include="Function\CheckAndCreateFolder.cs" />
     <Compile Include="RS232\RS232.cs" />
     <Compile Include="RS232\SerialCom.cs" />
-    <Compile Include="SeriesMana\LiveChartManager.cs" />
-    <Compile Include="Stage\Dct\DctXYStageControl.cs" />
-    <Compile Include="Stage\Dct\DctZStageControl.cs" />
-    <Compile Include="Stage\Dummy\DumyDctXYStageControl.cs" />
-    <Compile Include="Stage\Dummy\DumyDctZStageControl.cs" />
-    <Compile Include="Stage\Dummy\DumyStageControl.cs" />
-    <Compile Include="Stage\Sigmakoki\RStage\DummySigmaRStageControl.cs" />
-    <Compile Include="Stage\Sigmakoki\RStage\SigmaRStageControl.cs" />
-    <Compile Include="Stage\Sigmakoki\XStage\StageControl.cs" />
-    <Compile Include="sub\ExcelIO.cs" />
-    <Compile Include="sub\SubMethod.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -212,19 +199,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Camera\CameraSetting.cs" />
-    <Compile Include="Camera\DalsaMember.cs" />
-    <Compile Include="Camera\GrabMana.cs" />
-    <Compile Include="Function\AFCalc.cs" />
-    <Compile Include="Function\ArrayControl.cs" />
-    <Compile Include="Function\Connection.cs" />
-    <Compile Include="Function\ConnectVISA.cs" />
-    <Compile Include="Function\CreatesObjects.cs" />
-    <Compile Include="Function\Display.cs" />
-    <Compile Include="Function\ObjectSetting.cs" />
-    <Compile Include="Function\SaveAndLoad.cs" />
-    <Compile Include="Function\UISetting.cs" />
-    <Compile Include="MainModule.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -287,9 +261,7 @@
       <Name>MachineControl</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Align\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

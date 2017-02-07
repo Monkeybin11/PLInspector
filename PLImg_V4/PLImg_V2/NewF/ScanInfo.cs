@@ -32,17 +32,17 @@ namespace PLImg_V2
             YStep    = yStep;
         }
         public void SetBufInfo(int bufW,int bufH) {
-            BuffH = bufH;
-            BuffW = bufW;
+            if(bufH > 0 ) BuffH = bufH;
+            if(BuffW > 0 )BuffW = bufW;
         }
 
         public void SetLimit(int buf,int unit, int line) {
-            BuffLimit = buf; 
-            UnitLimit = unit; 
-            LineLimit = line; 
+            if( buf  > 0 )  BuffLimit = buf; 
+            if( unit > 0 )  UnitLimit = unit;
+            if( line > 0 ) LineLimit = line; 
         }
         public void SetScanSpeed( int sped ) {
-            ScanSpeed = sped;
+            if ( sped > 0 ) ScanSpeed = sped;
         }
     }
 }

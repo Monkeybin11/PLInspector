@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accord, Version=3.4.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.3.4.0\lib\net45\Accord.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DALSA.SaperaLT.SapClassBasic">
       <HintPath>..\DALSA.SaperaLT.SapClassBasic.dll</HintPath>
     </Reference>
@@ -74,6 +78,7 @@
     <Compile Include="Camera\Dalsa\DalsaPiranha3_12k.cs" />
     <Compile Include="Camera\Interface\Cam.cs" />
     <Compile Include="Communication\RS232C.cs" />
+    <Compile Include="Math\Indicator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stage\ACSController\AcsCtrlXYZ.cs" />
     <Compile Include="Communication\SerialCom.cs" />
@@ -83,6 +88,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Accord.3.4.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.4.0\build\Accord.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Accord.3.4.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.4.0\build\Accord.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
