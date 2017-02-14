@@ -306,13 +306,9 @@
                         <RowDefinition Height="600"/>
                     </Grid.RowDefinitions>
                     <Label Content="Analysis" VerticalAlignment="Center" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
-
-                    <UniformGrid Grid.Row="1" Width="560" Height="560" Rows="1" Columns="4">
-                        <WindowsFormsHost Grid.Row="1"  Width="140" Height="550" Margin="0,-2,0,0" VerticalAlignment="Top">
-                            <emgu:ImageBox x:Name="imgboxTrig1" Width="140" Height="550" />
-                        </WindowsFormsHost>
-                    </UniformGrid>
-                    
+                    <WindowsFormsHost Grid.Row="1"  Width="550" Height="550" Margin="5,0,5,10" VerticalAlignment="Center">
+                        <emgu:ImageBox x:Name="imgboxanal" Width="550" Height="550" />
+                    </WindowsFormsHost>
                 </Grid>
             </Border>
         </Grid>
