@@ -45,10 +45,12 @@ namespace PLImg_V2
         public SeriesCollection seriesbox { get; set; }
         public ChartValues<int> chartV { get; set; }
         ImageBox[,] ImgBoxArr;
-        StageEnableState XStageState;
-        StageEnableState YStageState;
-        StageEnableState ZStageState;
 
+        Dictionary<string,StageEnableState> StgState;
+
+        
+        
+        
         Action<ScanMode> SetScanInfo;
 
         void InitFunc() {
@@ -107,10 +109,10 @@ namespace PLImg_V2
         #region Init
         void InitMainMod( )
         {
-            XStageState = StageEnableState.Enabled;
-            YStageState = StageEnableState.Enabled;
-            ZStageState = StageEnableState.Enabled;
-
+            foreach ( var item in XYZ )
+            {
+                StgState[item] = StageEnableState.Enabled;
+            }
             Core.evtRealimg       += new TferImgArr( DisplayRealTime );
             Core.evtSV            += new TferNumber( DisplayAF );
             Core.evtMapImg        += new TferSplitImgArr( DisplayFullScanImg );
@@ -178,6 +180,13 @@ namespace PLImg_V2
             nudGoZPos.Value = 29.500;
         }
 
+        void InitLocalData() {
+            StgState = new Dictionary<string , StageEnableState>();
+            StgState.Add("Y", new StageEnableState());
+            StgState.Add("X", new StageEnableState());
+            StgState.Add("Z", new StageEnableState());
+        }
+
         void DisplayPos(double[] inputPos)
         {
             Task.Run( ( ) => lblXpos.BeginInvoke( (Action)(( ) => lblXpos.Content = inputPos[0].ToString("N4")) ) );
@@ -230,7 +239,6 @@ namespace PLImg_V2
             }
 
         }
-            
 
         void ScanStart( ) { Mouse.OverrideCursor = Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;}
         void ScanEnd( ) { Mouse.OverrideCursor = null; }
@@ -266,15 +274,15 @@ namespace PLImg_V2
         // XYZStage //
         private void btnYMove_Click( object sender, RoutedEventArgs e )
         {
-            if ( YStageState == StageEnableState.Enabled ) Core.MoveXYstg( "Y" , ( double ) nudGoYPos.Value );
+            if ( StgState["Y"] == StageEnableState.Enabled ) Core.MoveXYstg( "Y" , ( double ) nudGoYPos.Value );
         }
         private void btnXMove_Click( object sender, RoutedEventArgs e )
         {
-            if ( XStageState == StageEnableState.Enabled ) Core.MoveXYstg( "X" , ( double ) nudGoXPos.Value );
+            if ( StgState["X"] == StageEnableState.Enabled ) Core.MoveXYstg( "X" , ( double ) nudGoXPos.Value );
         }
         private void btnZMove_Click( object sender, RoutedEventArgs e )
         {
-            if(ZStageState == StageEnableState.Enabled) Core.MoveZstg( ( double ) nudGoZPos.Value );
+            if( StgState["Z"] == StageEnableState.Enabled) Core.MoveZstg( ( double ) nudGoZPos.Value );
         }
 
       
@@ -298,35 +306,35 @@ namespace PLImg_V2
         #endregion
 
         #region Motor Enable / Disable // Done
+        private void ckbYDisa_Checked( object sender , RoutedEventArgs e )
+        {
+            Core.Stg.Disable( "Y" )();
+            StgState["Y"] = StageEnableState.Disabled;
+        }
         private void ckbXDisa_Checked( object sender, RoutedEventArgs e ) {
             Core.Stg.Disable("X")();
-            XStageState = StageEnableState.Disabled;
+            StgState["X"] = StageEnableState.Disabled;
         }
-
-        private void ckbYDisa_Checked( object sender, RoutedEventArgs e ) {
-            Core.Stg.Disable( "Y" )();
-            YStageState = StageEnableState.Disabled;
-        }
-
         private void ckbZDisa_Checked( object sender, RoutedEventArgs e ) {
             Core.Stg.Disable( "Z" )();
-            ZStageState = StageEnableState.Disabled;
+            StgState["Z"] = StageEnableState.Disabled;
         }
-
-        private void ckbZDisa_Unchecked( object sender, RoutedEventArgs e ) {
+        private void ckbYDisa_Unchecked( object sender , RoutedEventArgs e )
+        {
             Core.Stg.Enable( "Y" )();
-            ZStageState = StageEnableState.Enabled;
+            StgState["Y"] = StageEnableState.Enabled;
         }
-
-        private void ckbYDisa_Unchecked( object sender, RoutedEventArgs e ) {
-            Core.Stg.Enable( "Y" )();
-            YStageState = StageEnableState.Enabled;
-        }
-
-        private void ckbXDisa_Unchecked( object sender, RoutedEventArgs e ) {
+        private void ckbXDisa_Unchecked( object sender , RoutedEventArgs e )
+        {
             Core.Stg.Enable( "X" )();
-            XStageState = StageEnableState.Enabled;
+            StgState["X"] = StageEnableState.Enabled;
         }
+        private void ckbZDisa_Unchecked( object sender, RoutedEventArgs e ) {
+            Core.Stg.Enable( "Z" )();
+            StgState["Z"] = StageEnableState.Enabled;
+        }
+
+        
         #endregion
 
         #region Sscan data Setting 
