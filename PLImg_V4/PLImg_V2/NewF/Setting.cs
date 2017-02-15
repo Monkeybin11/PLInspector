@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PLImg_V2.NewF
+namespace PLImg_V2
 {
     public class Setting
     {

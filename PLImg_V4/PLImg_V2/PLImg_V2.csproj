@@ -185,9 +185,13 @@
     </ApplicationDefinition>
     <Compile Include="NewF\Core.cs" />
     <Compile Include="Data\ConnectionData.cs" />
+    <Compile Include="NewF\Core_Data.cs" />
+    <Compile Include="NewF\Core_Structure.cs" />
+    <Compile Include="NewF\Core_Scan.cs" />
     <Compile Include="NewF\ScanInfo.cs" />
     <Compile Include="NewF\Setting.cs" />
     <Compile Include="Data\FullScanData.cs" />
+    <Compile Include="NewF\TrgScanInfo.cs" />
     <Compile Include="RS232\RS232.cs" />
     <Compile Include="RS232\SerialCom.cs" />
     <Page Include="MainWindow.xaml">

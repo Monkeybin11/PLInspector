@@ -10,14 +10,14 @@ namespace PLImg_V2
     {
         public double PsXStart;
         public double PsYStart;
-        public double PsXEnd  ;
+        public double PsYEnd  ;
 
         public int BuffW = 12288;
         public int BuffH = 1024;
 
         public readonly int OneUnitBuffNum = 12;
         public readonly int OneLineBuffNum = 48;
-        public double YStep = 28.3; // Unit um
+        public double XStep = 28.3; // Unit um
 
         public int BuffLimit = 11;
         public int UnitLimit = 3;
@@ -25,21 +25,21 @@ namespace PLImg_V2
 
         public int ScanSpeed = 1;
 
-        public void SetPos(int xstart,int ystart,int xend,double yStep) {
+        public void SetPos(int xstart,int ystart,int yend,double xStep = 0 ) {
             PsXStart = xstart;
             PsYStart = ystart;
-            PsXEnd   = xend;
-            YStep    = yStep;
+            PsYEnd   = yend;
+            XStep    = xStep;
         }
         public void SetBufInfo(int bufW,int bufH) {
-            if(bufH > 0 ) BuffH = bufH;
-            if(BuffW > 0 )BuffW = bufW;
+            if( bufH > 0 ) BuffH = bufH;
+            if( bufW > 0 ) BuffW = bufW;
         }
 
-        public void SetLimit(int buf,int unit, int line) {
+        public void SetLimit(int buf,int unit, int line = 0) {
             if( buf  > 0 )  BuffLimit = buf; 
             if( unit > 0 )  UnitLimit = unit;
-            if( line > 0 ) LineLimit = line; 
+            if( line > 0 )  LineLimit = line; 
         }
         public void SetScanSpeed( int sped ) {
             if ( sped > 0 ) ScanSpeed = sped;

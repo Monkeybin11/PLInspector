@@ -53,7 +53,7 @@ namespace PLImg_V2
 
         void InitFunc() {
             SetScanInfo = Core.ScanInfoSet(
-                         ( int ) nudStartXPos.Value , ( int ) nudStartYPos.Value , ( int ) nudEndXPos.Value , ( double ) nudYstep.Value ,
+                         ( int ) nudStartXPos.Value , ( int ) nudStartYPos.Value , ( int ) nudEndYPos.Value , ( double ) nudXstep.Value ,
                          -1 , -1 ,
                          ( int ) nudScanbuffNum.Value , ( int ) nudScanUnitNum.Value , ( int ) nudScanLineNum.Value ,
                          ( int ) nudScanSpeed.Value );
@@ -162,8 +162,8 @@ namespace PLImg_V2
         {
             nudStartXPos.Value = 50;
             nudStartYPos.Value = 100;
-            nudEndXPos.Value = 170;
-            nudYstep.Value = 28.300;
+            nudEndYPos.Value = 170;
+            nudXstep.Value = 28.300;
 
             nudExtime.Value = 400;
             nudlinerate.Value = 4000;
@@ -187,37 +187,50 @@ namespace PLImg_V2
         #endregion
 
         #region MainWindowEvent
-        private void btnSetting_Click(object sender, RoutedEventArgs e)
-        {
-            flyFunc.IsOpen = false;
-            flySetting.IsOpen = true;
-        }
-        private void btnFunc_Click(object sender, RoutedEventArgs e)
-        {
-            flySetting.IsOpen = false;
-            flyFunc.IsOpen = true;
-        }
         private void btnLineScan_Click(object sender, RoutedEventArgs e)
         {
-            ClearImgBox();
-            ScanDataSet( ScanMode.SingleLine );
-            Core.ReadyPos();
-            Core.ScanStart();
+            StartScan( ScanMode.SingleLine );
         }
         private void btnFullScan_Click(object sender, RoutedEventArgs e)
         {
+            StartScan( ScanMode.MultiLine );
+        }
+        private void btnTrgScanStart_Click( object sender , RoutedEventArgs e )
+        {
+            StartScan( ScanMode.TrgCustom );
+        }
+
+        void StartScan( ScanMode mode ) {
             ClearImgBox();
-            ScanDataSet(ScanMode.MultiLine);
-            Core.ReadyPos();
+            ScanDataSet( mode );
+            Core.ReadyPos( mode == ScanMode.MultiLine || mode == ScanMode.SingleLine ? ScanTypes.NonTrig : ScanTypes.Trig );
             Core.ScanStart();
         }
         void ScanDataSet( ScanMode mode ) {
-            Core.ScanInfoSet(
-                ( int ) nudStartXPos.Value , ( int ) nudStartYPos.Value , ( int ) nudEndXPos.Value , ( double ) nudYstep.Value ,
+            if ( mode == ScanMode.MultiLine || mode == ScanMode.SingleLine )
+            {
+                Core.ScanInfoSet(
+                ( int ) nudStartXPos.Value , ( int ) nudStartYPos.Value , ( int ) nudEndYPos.Value , ( double ) nudXstep.Value ,
                 -1 , -1 ,
                 ( int ) nudScanbuffNum.Value , ( int ) nudScanUnitNum.Value , ( int ) nudScanLineNum.Value ,
-                ( int ) nudScanSpeed.Value )(mode);
-                }
+                ( int ) nudScanSpeed.Value )( mode );
+            }
+            else if ( mode == ScanMode.TrgCustom )
+            {
+                Core.ScanInfoSet(
+                    ( int ) nudTrgYStart.Value ,
+                    ( int ) nudTrgBuffNum.Value ,
+                    ( int ) nudTrgXStep.Value ,
+                    ( int ) nudTrgLineNum.Value ,
+                    ( int ) nudTrgScanSpeed.Value)(mode);
+            }
+            else
+            {
+                Core.ScanInfoSet( ( int ) nudTrgYStart.Value )( mode );
+            }
+
+        }
+            
 
         void ScanStart( ) { Mouse.OverrideCursor = Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;}
         void ScanEnd( ) { Mouse.OverrideCursor = null; }
@@ -403,8 +416,9 @@ namespace PLImg_V2
 
         }
 
+
         #endregion
 
-
+        
     }
 }

@@ -25,76 +25,12 @@
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="540"/>
+                <RowDefinition Height="590"/>
                 <RowDefinition Height="340"/>
             </Grid.RowDefinitions>
-            
-            <UniformGrid Columns="2" Grid.Row="0" >
-                <Button x:Name="btnSetting" Content="Setting"  FontSize="13" Margin="15,5,7,5" Click="btnSetting_Click" />
-                <Button x:Name="btnFunc"    Content="Stage Control"    FontSize="13" Margin="15,5,15,5" Click="btnFunc_Click"/>
-            </UniformGrid>
 
-            <TabControl>
-                
-                
-            </TabControl>
-            
-            
-            <!--메인 메뉴-->
-            <Grid Grid.Row="1" Width="370" Height="495" Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="70"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                    <RowDefinition Height="47"/>
-                </Grid.RowDefinitions>
-                <Label Content="Measurement" Grid.Row="0" Grid.ColumnSpan="2"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Center"/>
-
-                <Button x:Name ="btnFullScan"   Grid.Row="1" Grid.Column="0" Content="Full Scan"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnFullScan_Click"/>
-                <Button x:Name ="btnLineScan"   Grid.Row="1" Grid.Column="1" Content="Line Scan"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnLineScan_Click"/>
-                <Button x:Name ="btnGrap"       Grid.Row="2" Grid.Column="0" Content="Grap"        Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnGrap_Click"/>
-                <Button x:Name ="btnFreeze"     Grid.Row="2" Grid.Column="1" Content="Freeze"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnFreeze_Click"/>
-                <Button x:Name ="btnSaveData"   Grid.Row="3" Grid.Column="0" Content="Save Data"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnSaveData_Click"/>
-                <Button x:Name ="btnSaveImg"    Grid.Row="3" Grid.Column="1" Content="Save Img"    Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnSaveData_Click"/>
-                
-                <UniformGrid Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Columns="4" Rows="2">
-                    <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Content="Buff N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
-                    <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Content="Unit N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
-                    <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Content="line N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
-
-                    <mahapps:NumericUpDown x:Name="nudScanbuffNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="1" />
-                    <mahapps:NumericUpDown x:Name="nudScanUnitNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="0"/>
-                    <mahapps:NumericUpDown x:Name="nudScanLineNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="0"/>
-
-                </UniformGrid>
-                
-                <Label Grid.Row="4" FontWeight="Bold" Content="Start XPosition"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
-                <Label Grid.Row="5" FontWeight="Bold" Content="Start YPosition"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
-                <Label Grid.Row="6" FontWeight="Bold" Content="End XPosition"    VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
-                <Label Grid.Row="7" FontWeight="Bold" Content="Y Step"           VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
-                
-                <mahapps:NumericUpDown x:Name="nudStartXPos" Grid.Row="4" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
-                <mahapps:NumericUpDown x:Name="nudStartYPos" Grid.Row="5" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
-                <mahapps:NumericUpDown x:Name="nudEndXPos"   Grid.Row="6" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
-                <mahapps:NumericUpDown x:Name="nudYstep"   Grid.Row="7" Grid.Column="1" HasDecimals="True"   StringFormat="0.000" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
-            </Grid>
-            
-            
-            <!--플라이 아웃 세팅 -->
-            <mahapps:FlyoutsControl Grid.Row="1">
-                <mahapps:Flyout x:Name="flySetting" IsOpen="False" Header="Setting" Position="Left" Width="390" Height="495" Margin="0,0,5,0" FontSize="20">
+            <TabControl >
+                <TabItem Header="Scan Setting" FontSize="18">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -119,15 +55,9 @@
                         <mahapps:NumericUpDown x:Name="nudExtime"   Grid.Row="0" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0.0" KeyUp="nudExtime_KeyUp" />
                         <mahapps:NumericUpDown x:Name="nudlinerate" Grid.Row="1" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0"   KeyUp="nudlinerate_KeyUp"  />
                         <mahapps:NumericUpDown x:Name="nudScanSpeed"   Grid.Row="2" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0" />
-
-                        
                     </Grid>
-                </mahapps:Flyout>
-            </mahapps:FlyoutsControl>
-
-            <!--플라이 아웃 스테이지 구동-->
-            <mahapps:FlyoutsControl Grid.Row="1">
-                <mahapps:Flyout x:Name="flyFunc" IsOpen="False"  Header="Stage Control" Position="Left" Width="390" Height="495" Margin="0,0,5,0" >
+                </TabItem>
+                <TabItem Header="Stage" FontSize="18">
                     <Grid x:Name="gridflyback" Grid.Row="1" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -144,16 +74,16 @@
                             <RowDefinition Height="47"/>
                             <RowDefinition Height="47"/>
                         </Grid.RowDefinitions>
-                        
+
                         <Button x:Name ="btnOrigin"      Grid.Row="0" Grid.Column="0" Content="origin"       Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnOrigin_Click"/>
                         <Button x:Name ="btnROrigin"     Grid.Row="1" Grid.Column="0" Content="ROrigin"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnROrigin_Click"/>
                         <Button x:Name ="btnRForceStop"  Grid.Row="1" Grid.Column="1" Content="RForce Stop"  Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" FontSize="13" Click="btnRForceStop_Click"/>
-                        
+
                         <Button x:Name ="btnXMove"      Grid.Row="2" Grid.Column="0" Content="X Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnXMove_Click"/>
                         <Button x:Name ="btnYMove"      Grid.Row="3" Grid.Column="0" Content="Y Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnYMove_Click"/>
                         <Button x:Name ="btnZMove"      Grid.Row="4" Grid.Column="0" Content="Z Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnZMove_Click"/>
                         <Button x:Name ="btnRMove"      Grid.Row="5" Grid.Column="0" Content="R Move (deg)"     Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnRMove_Click"/>
-                        
+
                         <UniformGrid Grid.Row="6" Grid.ColumnSpan="2" Columns="4">
                             <Label Content="Disable" HorizontalAlignment="Center" Margin="35,10,10,10" FontSize="13"/>
                             <CheckBox x:Name="ckbXDisa" Content=" : X"   FlowDirection="RightToLeft"  HorizontalAlignment="Center" VerticalAlignment="Center" Checked="ckbXDisa_Checked" Unchecked="ckbXDisa_Unchecked"/>
@@ -168,8 +98,92 @@
                         <mahapps:NumericUpDown x:Name="nudGoRPos" StringFormat="0.00" Grid.Row="5" Grid.Column="1" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" />
 
                     </Grid>
-                </mahapps:Flyout>
-            </mahapps:FlyoutsControl>
+                </TabItem>
+                <TabItem Header="Single Scan" FontSize="18">
+                    <Grid Grid.Row="1" Width="370" Height="495" Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                        </Grid.RowDefinitions>
+                        <Button x:Name ="btnFullScan"   Grid.Row="1" Grid.Column="0" Content="Full Scan"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnFullScan_Click"/>
+                        <Button x:Name ="btnLineScan"   Grid.Row="1" Grid.Column="1" Content="Line Scan"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnLineScan_Click"/>
+                        <Button x:Name ="btnGrap"       Grid.Row="2" Grid.Column="0" Content="Grap"        Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnGrap_Click"/>
+                        <Button x:Name ="btnFreeze"     Grid.Row="2" Grid.Column="1" Content="Freeze"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnFreeze_Click"/>
+                        <Button x:Name ="btnSaveData"   Grid.Row="3" Grid.Column="0" Content="Save Data"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnSaveData_Click"/>
+                        <Button x:Name ="btnSaveImg"    Grid.Row="3" Grid.Column="1" Content="Save Img"    Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnSaveData_Click"/>
+
+                        <UniformGrid Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Columns="4" Rows="2">
+                            <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Content="Buff N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
+                            <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Content="Unit N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
+                            <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Content="line N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
+
+                            <mahapps:NumericUpDown x:Name="nudScanbuffNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="1" />
+                            <mahapps:NumericUpDown x:Name="nudScanUnitNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="0"/>
+                            <mahapps:NumericUpDown x:Name="nudScanLineNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="0"/>
+
+                        </UniformGrid>
+
+                        <Label Grid.Row="4" FontWeight="Bold" Content="Start XPosition"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
+                        <Label Grid.Row="5" FontWeight="Bold" Content="Start YPosition"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
+                        <Label Grid.Row="6" FontWeight="Bold" Content="End YPosition"    VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
+                        <Label Grid.Row="7" FontWeight="Bold" Content="X Step"           VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
+
+                        <mahapps:NumericUpDown x:Name="nudStartXPos" Grid.Row="4" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
+                        <mahapps:NumericUpDown x:Name="nudStartYPos" Grid.Row="5" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
+                        <mahapps:NumericUpDown x:Name="nudEndYPos"   Grid.Row="6" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
+                        <mahapps:NumericUpDown x:Name="nudXstep"   Grid.Row="7" Grid.Column="1" HasDecimals="True"   StringFormat="0.000" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Trigger Scan" FontSize="18">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150*"/>
+                            <ColumnDefinition Width="150*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="47"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Content="Buffer Length"      FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,0,10" FontSize="13" Grid.ColumnSpan="2" />
+                        <Label Grid.Row="1" Content="Line Number"        FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,0,10" FontSize="13" Grid.ColumnSpan="2" />
+                        <Label Grid.Row="2" Content="Line Rate"          FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,0,10" FontSize="13" Grid.ColumnSpan="2" />
+                        <Label Grid.Row="3" Content="Scan Speed mm/sec"  FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,0,10" FontSize="13" Grid.ColumnSpan="2" />
+                        <Label Grid.Row="4" Content="Y Start Pos"        FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,0,10" FontSize="13" Grid.ColumnSpan="2" />
+                        <Label Grid.Row="5" Content="Y Step Size"        FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,0,10" FontSize="13" Grid.ColumnSpan="2" />
+
+                        <mahapps:NumericUpDown x:Name="nudTrgBuffNum"   Grid.Row="0" Grid.Column="3"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="2,12,0,12" StringFormat="0.0"  />
+                        <mahapps:NumericUpDown x:Name="nudTrgLineNum"   Grid.Row="1" Grid.Column="3"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="2,12,0,12" StringFormat="0"    />
+                        <mahapps:NumericUpDown x:Name="nudTrgLineRate"  Grid.Row="2" Grid.Column="3"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="2,12,0,12" StringFormat="0" />
+                        <mahapps:NumericUpDown x:Name="nudTrgScanSpeed" Grid.Row="3" Grid.Column="3"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="2,12,0,12" StringFormat="0" />
+                        <mahapps:NumericUpDown x:Name="nudTrgYStart"    Grid.Row="4" Grid.Column="3"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="2,12,0,12" StringFormat="0" />
+                        <mahapps:NumericUpDown x:Name="nudTrgXStep"     Grid.Row="5" Grid.Column="3"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="2,12,0,12" StringFormat="0" />
+
+                        <Button x:Name ="btnLoadConfig"   Content="LoadConfig"  Grid.Row="7" Grid.Column="0" Height="24" Width="140"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,12,0,12" FontSize="14" />
+                        <Button x:Name ="btnTrgScanStart" Content="Start"       Grid.Row="7" Grid.Column="1" Height="24" Width="140"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="2,12,0,12"  FontSize="14" Click="btnTrgScanStart_Click"/>
+                        <Button x:Name ="btnSaveImg2"     Content="Save Img"    Grid.Row="8" Grid.Column="0" Height="24" Width="140"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,12,0,12" FontSize="14" />
+                    </Grid>
+                </TabItem>
+            </TabControl>
 
             <Border Grid.Row="1" BorderBrush="White" BorderThickness="1" Width="370" Height="495" Margin="5"/>
 
@@ -311,8 +325,16 @@
                         <WindowsFormsHost Grid.Row="1"  Width="140" Height="550" Margin="0,-2,0,0" VerticalAlignment="Top">
                             <emgu:ImageBox x:Name="imgboxTrig1" Width="140" Height="550" />
                         </WindowsFormsHost>
+                        <WindowsFormsHost Grid.Row="1"  Width="140" Height="550" Margin="0,-2,0,0" VerticalAlignment="Top">
+                            <emgu:ImageBox x:Name="imgboxTrig2" Width="140" Height="550" />
+                        </WindowsFormsHost>
+                        <WindowsFormsHost Grid.Row="1"  Width="140" Height="550" Margin="0,-2,0,0" VerticalAlignment="Top">
+                            <emgu:ImageBox x:Name="imgboxTrig3" Width="140" Height="550" />
+                        </WindowsFormsHost>
+                        <WindowsFormsHost Grid.Row="1"  Width="140" Height="550" Margin="0,-2,0,0" VerticalAlignment="Top">
+                            <emgu:ImageBox x:Name="imgboxTrig4" Width="140" Height="550" />
+                        </WindowsFormsHost>
                     </UniformGrid>
-                    
                 </Grid>
             </Border>
         </Grid>

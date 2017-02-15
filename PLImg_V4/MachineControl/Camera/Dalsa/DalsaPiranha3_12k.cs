@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NationalInstruments.VisaNS;
-using static LanguageExt.Prelude;
-using LanguageExt;
 using DALSA.SaperaLT.SapClassBasic;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.IO;
 using System.Reflection;
+
 
 namespace MachineControl.Camera.Dalsa
 {
@@ -21,12 +20,12 @@ namespace MachineControl.Camera.Dalsa
 
         public Action BuffClear()
         {
-            return act(()=> Buffers.Clear() );
+            return new Action(()=> Buffers.Clear() );
         }
 
         public Func<byte[]> BuffGetAll( SapBuffer buff )
         {
-            return fun( () =>
+            return new Func<byte[]>( () =>
             {
                 byte[] output = new byte[buff.Width*buff.Height];
                 GCHandle outputAddr = GCHandle.Alloc( output, GCHandleType.Pinned); // output 의 주소 만듬
@@ -40,7 +39,7 @@ namespace MachineControl.Camera.Dalsa
 
         public Func<byte[]> BuffGetLine( SapBuffer buff )
         {
-            return fun( () =>
+            return new Func<byte[]>( () =>
             {
                 byte[] output = new byte[buff.Width];
                 GCHandle outputAddr = GCHandle.Alloc(output, GCHandleType.Pinned); // output 의 GC주소 만듬
@@ -55,7 +54,7 @@ namespace MachineControl.Camera.Dalsa
 
         public Action Connect( string path )
         {
-            return act(()=> {
+            return new Action(()=> {
                 mbSession = ( MessageBasedSession ) ResourceManager.GetLocalManager().Open( path );
                 LoadSetting();
                 SaveSetting();
@@ -63,9 +62,17 @@ namespace MachineControl.Camera.Dalsa
             } );
         }
 
+        public Action ConfigRefresh( string configPath ) {
+            return new Action(()=> {
+                ConfigFile = configPath;
+                CreateCamObj();
+                SaveSetting();
+            } );
+        }
+
         public Action Disconnect()
         {
-            return act(()=> {
+            return new Action( ()=> {
                 if ( Xfer != null )
                 {
                     Xfer.Destroy();
@@ -101,24 +108,24 @@ namespace MachineControl.Camera.Dalsa
 
         public Action<double> Exposure()
         {
-            return act((double value)=> {
+            return new Action<double>( (double value)=> {
                 mbSession.Query( "set " + value.ToString() + "\r" );
             } );
         }
 
         public Action Freeze()
         {
-            return act( () => Xfer.Freeze() );
+            return new Action( () => Xfer.Freeze() );
         }
 
         public Action Grab()
         {
-            return act( () => Xfer.Grab() );
+            return new Action( () => Xfer.Grab() );
         }
 
         public Action<double> LineRate()
         {
-            return act( ( double value ) => {
+            return new Action<double>( ( double value ) => {
                 mbSession.Query( "ssf " + value.ToString() + "\r" );
             } );
         }
@@ -195,6 +202,7 @@ namespace MachineControl.Camera.Dalsa
 
             View = new SapView( Buffers );
         }
+
         
         #endregion
     }
