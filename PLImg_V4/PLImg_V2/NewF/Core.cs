@@ -29,9 +29,16 @@ namespace PLImg_V2
         public ScanInfo Info         = new ScanInfo();
         public TrgScanInfo TrgInfo   = new TrgScanInfo();
         Indicator Idc = new Indicator();
-        
+
 
         /*GFunc*/
+        public Action Connect_NonTrigger;
+        public Action Connect_Trigger1;
+        public Action Connect_Trigger2;
+        public Action Connect_Trigger4;
+        public Action Connect_XYZStage;
+
+
         public Action<double> LineRate;
         public Action<double> Exposure;
         public Action         Grab;
@@ -39,24 +46,45 @@ namespace PLImg_V2
         public Action         BufClear;
         public Func<byte[]>   FullBuffdata;
         public Func<byte[]>   SingleBuffdata;
+        public Func<byte[], int, Image<Gray, byte>> Reshape2D;
+        public Dictionary<string,Action> StgEnable;
 
         public void ConnectDevice( string camPath , string stgPath , string rstagPath ) {
-            Cam.Connect(camPath)();
-            var stgConnectMode = MachineControl.Stage.Interface.ConnectMode.Com;
-            Stg.Connect(stgPath, stgConnectMode )();
+            Connect_NonTrigger();
+            Connect_XYZStage();
             InitFunc();
+            InitData();
+            foreach ( var item in StgEnable ) item.Value();
+            Reshape2D = FnBuff2Img( ImgWH["H"], ImgWH["W"] );
         }
 
         /* GFun Create */
-        public void InitFunc() {
+        public void Create_Connector( string camPath, string stgPath, string rstagPath )
+        {
+            Connect_NonTrigger = Cam.Connect( camPath  , ScanConfig.nonTrigger) ;
+            Connect_Trigger1  =  Cam.Connect( camPath  , ScanConfig.Trigger_1);
+            Connect_Trigger2  =  Cam.Connect( camPath  , ScanConfig.Trigger_2);
+            Connect_Trigger4  =  Cam.Connect( camPath, ScanConfig.Trigger_4);
+            var stgConnectMode = MachineControl.Stage.Interface.ConnectMode.IP;
+            Connect_XYZStage = Stg.Connect( stgPath, stgConnectMode );
+        }
+
+        public void InitFunc( ) {
             Cam.EvtResist( Cam.Xfer, GrabDoneEvt );
-            Exposure = Cam.Exposure();
-            LineRate = Cam.LineRate();
-            Grab     = Cam.Grab();
-            Freeze   = Cam.Freeze();
-            BufClear = Cam.BuffClear();
+            Exposure       = Cam.Exposure();
+            LineRate       = Cam.LineRate();
+            Grab           = Cam.Grab();
+            Freeze         = Cam.Freeze();
+            BufClear       = Cam.BuffClear();
             FullBuffdata   = Cam.BuffGetAll( Cam.Buffers );
             SingleBuffdata = Cam.BuffGetLine( Cam.Buffers );
+
+            StgEnable = new Dictionary<string, Action>();
+            foreach ( var item in GD.YXZ ) StgEnable.Add( item , Stg.Enable( item ) );
+        }
+
+        public void InitData( ) {
+            ImgWH = Cam.GetBuffWH();
         }
 
         void GrabDoneEvt( object sender , SapXferNotifyEventArgs evt ) {
@@ -77,11 +105,26 @@ namespace PLImg_V2
                     break;
 
                 default:
-                    evtRealimg( FnBuff2Img(  Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] )( FullBuffdata() , 1) );
-                    var zscore = Idc.Zscore( SingleBuffdata().Cast<double>().ToArray<double>() );
-                    Task.Run(()=> evtSV( Idc.Variance( zscore() )() ) );
+                    evtRealimg( Reshape2D( FullBuffdata() , 1) );
+                    Task.Run(()=> TferVariance( SingleBuffdata() ) );
                     break;
             }
+        }
+
+        public void TferVariance( byte[] src ) {
+            try
+            {
+                double[] dst = new double[src.Length];
+                Array.Copy(src,dst,src.Length);
+                var zscore = Idc.Zscore( dst );
+                var vari = Idc.Variance(zscore());
+                Task.Run( ( ) => evtSV( vari() ) );
+            }
+            catch ( Exception ex)
+            {
+                Console.WriteLine( ex.ToString() );
+            }
+                
         }
 
         #region Stage Control
@@ -114,26 +157,8 @@ namespace PLImg_V2
         }
         #endregion
 
-        #region indicator
-        double SV(double[] input) {
-            var zscore = Idc.Zscore(input);
-            var vari = Idc.Variance(zscore());
-            return vari();
-
-        }
-
-        #endregion
-
         #region Minor
-        Func<byte[],int , Image<Gray , byte>> FnBuff2Img( int bufH, int bufW )
-        {
-            Func<byte[],int,Image<Gray , byte>> output = new Func<byte[],int,Image<Gray, byte>>((data,bufcount)=> {
-                Image<Gray, byte> buffImgData = new Image<Gray, byte>(bufW,bufH*bufcount);
-                buffImgData.Bytes = data;
-                return buffImgData;
-            } );
-            return output;
-        }
+        
         void LoadSetting() {
 
         }
@@ -147,30 +172,29 @@ namespace PLImg_V2
             //cacf.SettingFolder( dirTempPath );
             //GrabM.SetDirPath( dirTempPath );
         }
-        public void SaveImageData( Emgu.CV.UI.ImageBox[,] imgbox , string savepath )
-        {
-            try
-            {
-                for ( int i = 0 ; i < imgbox.GetLength( 0 ) ; i++ )
-                {
-                    for ( int j = 0 ; j < imgbox.GetLength( 1 ) ; j++ )
-                    {
-                        if ( imgbox[i , j].Image != null )
-                        {
-                            string temp = i.ToString( "D2" ) + "_"+j.ToString( "D3" );
-                            string outpath = System.IO.Path.Combine( savepath, temp );
-                            imgbox[i , j].Image.Save( String.Format( outpath + ".bmp" ) );
-                        }
-                    }
-                }
 
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( ex.ToString() );
-
-            }
-        }
         #endregion
+
+        public void ReadyNonTrigScan( ) {
+
+
+
+        }
+
+        public void ScanStart_Non( ) {
+
+
+        }
+
+        public void ReadyTrigScan(ScanConfig config ) {
+        
+
+
+        }
+
+        public void ScanStart_Trig(ScanConfig config ) {
+
+
+        }
     }
 }

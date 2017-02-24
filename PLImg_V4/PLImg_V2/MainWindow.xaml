@@ -124,10 +124,10 @@
                         <Button x:Name ="btnSaveData"   Grid.Row="3" Grid.Column="0" Content="Save Data"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnSaveData_Click"/>
                         <Button x:Name ="btnSaveImg"    Grid.Row="3" Grid.Column="1" Content="Save Img"    Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnSaveData_Click"/>
 
-                        <UniformGrid Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Columns="4" Rows="2">
-                            <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Content="Buff N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
-                            <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Content="Unit N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
-                            <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Content="line N" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" FontSize="10" />
+                        <UniformGrid Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Columns="3" Rows="2">
+                            <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Content="Buff N" VerticalAlignment="Center"  HorizontalAlignment="Center" Margin="3,10,3,10" FontSize="10" />
+                            <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Content="Unit N" VerticalAlignment="Center"  HorizontalAlignment="Center" Margin="3,10,3,10" FontSize="10" />
+                            <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Content="line N" VerticalAlignment="Center"  HorizontalAlignment="Center" Margin="3,10,3,10" FontSize="10" />
 
                             <mahapps:NumericUpDown x:Name="nudScanbuffNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="1" />
                             <mahapps:NumericUpDown x:Name="nudScanUnitNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="0"/>
@@ -146,7 +146,7 @@
                         <mahapps:NumericUpDown x:Name="nudXstep"   Grid.Row="7" Grid.Column="1" HasDecimals="True"   StringFormat="0.000" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="Trigger Scan" FontSize="18">
+                <TabItem Header="Trigger Scan" FontSize="18" Selector.Selected="TabItem_Selected">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="150*"/>
@@ -202,9 +202,9 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" FontWeight="Bold" Content="X Pos" VerticalAlignment="Center"  HorizontalAlignment="Left"         Margin="20,1,10,1" FontSize="13"/>
-                        <Label Grid.Row="1" FontWeight="Bold" Content="Y Pos"     VerticalAlignment="Center"  HorizontalAlignment="Left"     Margin="20,1,10,1" FontSize="13" />
-                        <Label Grid.Row="2" FontWeight="Bold" Content="Z Pos"     VerticalAlignment="Center"  HorizontalAlignment="Left"     Margin="20,1,10,1" FontSize="13" />
+                        <Label Grid.Row="0" FontWeight="Bold" Content="Y Pos"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,1,10,1" FontSize="13"/>
+                        <Label Grid.Row="1" FontWeight="Bold" Content="X Pos"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,1,10,1" FontSize="13" />
+                        <Label Grid.Row="2" FontWeight="Bold" Content="Z Pos"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,1,10,1" FontSize="13" />
                         <Label Grid.Row="3" FontWeight="Bold" Content="Resolution"    VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,1,10,1" FontSize="13" />
                         <Label Grid.Row="4" FontWeight="Bold" Content="AF Variance" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,1,10,1" FontSize="13" />
                         <Label Grid.Row="5" FontWeight="Bold" Content="Diff"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="20,1,10,1" FontSize="13" />

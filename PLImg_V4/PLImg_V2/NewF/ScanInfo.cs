@@ -37,9 +37,9 @@ namespace PLImg_V2
         }
 
         public void SetLimit(int buf,int unit, int line = 0) {
-            if( buf  > 0 )  BuffLimit = buf; 
-            if( unit > 0 )  UnitLimit = unit;
-            if( line > 0 )  LineLimit = line; 
+            if( buf  >= 0 )  this.BuffLimit = buf; 
+            if( unit >= 0 )  this.UnitLimit = unit;
+            if( line >= 0 )  this.LineLimit = line;
         }
         public void SetScanSpeed( int sped ) {
             if ( sped > 0 ) ScanSpeed = sped;

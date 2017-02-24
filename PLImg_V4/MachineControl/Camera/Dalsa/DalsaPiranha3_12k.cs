@@ -9,10 +9,14 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.IO;
 using System.Reflection;
+using System.Windows.Forms;
+using System.Xml.Serialization;
 
 
 namespace MachineControl.Camera.Dalsa
 {
+    
+
     public class DalsaPiranha3_12k : MachineControl.Camera.Interface.Cam<SapBuffer,byte[]>
     {
         #region Global
@@ -52,12 +56,14 @@ namespace MachineControl.Camera.Dalsa
             } );
         }
 
-        public Action Connect( string path )
+        public Action Connect( string path , dynamic mode )
         {
-            return new Action(()=> {
+            return new Action(( )=> {
+                Disconnect();
                 mbSession = ( MessageBasedSession ) ResourceManager.GetLocalManager().Open( path );
-                LoadSetting();
-                SaveSetting();
+                //LoadSetting();
+                //SaveSetting();
+                LoadConfig( mode );
                 CreateCamObj();
             } );
         }
@@ -164,7 +170,35 @@ namespace MachineControl.Camera.Dalsa
             return output;
         }
 
-        #region Local
+        #region Config
+        void LoadConfig( ScanConfig mode ) {
+            ServerName = DalsaCam_ccf_Data.ServerName;
+            ResourceIndex = DalsaCam_ccf_Data.ResourceIndex;
+
+            switch ( mode ) {
+                case ScanConfig.nonTrigger:
+
+                    break;
+
+                case ScanConfig.Trigger_1:
+                    ConfigFile = DalsaCam_ccf_Data.ConfigFile_2;
+                    ConfigFileName = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFile;
+                    break;
+
+                case ScanConfig.Trigger_2:
+                    ConfigFile = DalsaCam_ccf_Data.ConfigFile_2;
+                    ConfigFileName = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFile;
+                    break;
+
+                case ScanConfig.Trigger_4:
+                    ConfigFile = DalsaCam_ccf_Data.ConfigFile_4;
+                    ConfigFileName = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFile;
+                    break;
+            }
+        }
+
+
+
         void LoadSetting()
         {
             String KeyPath = "Software\\Teledyne DALSA\\Sapera LT\\SapAcquisition";
@@ -203,7 +237,22 @@ namespace MachineControl.Camera.Dalsa
             View = new SapView( Buffers );
         }
 
-        
+
+        #endregion
+
+        #region Config File control
+        //public DalsaCam_ccf_Data LoadConfigFile( ) {
+        //    OpenFileDialog ofd = new OpenFileDialog();
+        //    if ( ofd.ShowDialog() == DialogResult.OK )
+        //    {
+        //        using ( StreamReader sr = new StreamReader(ofd.FileName , Encoding.UTF8)) {
+        //            XmlSerializer xs = new XmlSerializer(typeof(DalsaCam_ccf_Data));
+        //            return (DalsaCam_ccf_Data)xs.Deserialize( sr );
+        //        }
+        //    }
+        //    return null;
+        //}
+
         #endregion
     }
 }

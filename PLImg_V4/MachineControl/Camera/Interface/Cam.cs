@@ -9,7 +9,7 @@ namespace MachineControl.Camera.Interface
     public interface Cam<Tbuff,Tout>
     {
         Dictionary<string , int> CamNum { get; set; }
-        Action Connect( string camNum );
+        Action Connect( string camNum , dynamic mode );
         Action Disconnect();
         Action Grab();
         Action Freeze();

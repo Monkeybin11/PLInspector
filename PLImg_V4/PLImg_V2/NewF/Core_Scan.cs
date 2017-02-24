@@ -24,7 +24,7 @@ namespace PLImg_V2
                 {
                     case ScanMode.MultiLine:
                         Info.SetPos( xstart , ystart , yend , xStep );
-                        Info.SetLimit( buflimit , unitlimit , linelimit );
+                        Info.SetLimit( buflimit-1 , unitlimit-1 , linelimit-1 );
                         break;
 
                     case ScanMode.SingleLine:
@@ -70,7 +70,7 @@ namespace PLImg_V2
                         Stg.Moveabs( "Y" )( Info.PsYStart );
                         Stg.WaitEps( "X" )( Info.PsXStart , 0.005 );
                         Stg.WaitEps( "Y" )( Info.PsYStart , 0.005 );
-                        xSpeed( Info.ScanSpeed );
+                        ySpeed( Info.ScanSpeed );
                         return true;
 
                     case ScanTypes.Trig:
@@ -78,7 +78,7 @@ namespace PLImg_V2
                         Stg.Moveabs( "Y" )( TrgInfo.PsYStart );
                         Stg.WaitEps( "X" )( TrgInfo.PsXStart , 0.005 );
                         Stg.WaitEps( "Y" )( TrgInfo.PsYStart , 0.005 );
-                        xSpeed( TrgInfo.ScanSpeed );
+                        ySpeed( TrgInfo.ScanSpeed );
                         return true;
                     default:
                         return false;
@@ -97,6 +97,7 @@ namespace PLImg_V2
                 InitCount();
                 ImgSrcByte = new byte[0];
                 ScanStatus = ScanState.Start;
+                NeedClearBuf = true;
                 return true;
             }
             catch ( Exception ex )
@@ -108,6 +109,7 @@ namespace PLImg_V2
 
         // 여기의 함수들을 스캔 타입에따라 정해준다. 논트리거 방식이냐 트리거 방식이냐 
         /*Scan process func*/
+
         bool StopProcess()
         {
             try
@@ -125,6 +127,7 @@ namespace PLImg_V2
                 return false;
             }
         }
+
         bool PauseProcess( int linecount )
         {
             try
@@ -147,29 +150,36 @@ namespace PLImg_V2
                 return false;
             }
         }
+
         bool StartProcess( ScanTypes type )
         {
             try
             {
-                Stg.Moveabs( "Y" )( Info.PsYEnd );
                 if ( NeedClearBuf )
                 {
                     Freeze();
-                    System.Threading.Thread.Sleep( 30 );
+                    System.Threading.Thread.Sleep( 500 );
+                    //Cam.Buffers.Destroy();
+                    //Cam.Buffers.Create();
                     Cam.BuffClear()();
+                    System.Threading.Thread.Sleep( 50 );
+                }
+                Stg.Moveabs( "Y" )( Info.PsYEnd );
+                if ( NeedClearBuf )
+                {
                     NeedClearBuf = false;
                     Grab();
                 }
 
+
                 /*Create Func*/
                 var Buf2Img = FnBuff2Img( Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] );
                 var currentbuff = FullBuffdata();
-
                 evtRealimg( Buf2Img( currentbuff , 1 ) );
                 ImgSrcByte = Matrix.Concatenate<byte>( ImgSrcByte , currentbuff );
                 //SaveFullDat(ImgSrcByte,LineCount,UnitCount,BuffCount);
                 evtMapImg( Buf2Img( ImgSrcByte , BuffCount + 1 ) , LineCount , UnitCount );
-                Update( BuffCount , UnitCount , LineCount );
+                Update(ref BuffCount ,ref UnitCount ,ref LineCount );
                 return true;
             }
             catch ( Exception ex )
@@ -179,6 +189,72 @@ namespace PLImg_V2
             }
         }
 
+
+
+        /* Sub StartScan Method */
+        bool NonTriggerScan( ) {
+            try
+            {
+                if ( NeedClearBuf )
+                {
+                    Freeze();
+                    System.Threading.Thread.Sleep( 500 );
+                    //Cam.Buffers.Destroy();
+                    //Cam.Buffers.Create();
+                    Cam.BuffClear()();
+                    System.Threading.Thread.Sleep( 50 );
+                }
+                Stg.Moveabs( "Y" )( Info.PsYEnd );
+                if ( NeedClearBuf )
+                {
+                    NeedClearBuf = false;
+                    Grab();
+                }
+
+
+                /*Create Func*/
+                var Buf2Img = FnBuff2Img( Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] );
+                var currentbuff = FullBuffdata();
+                evtRealimg( Buf2Img( currentbuff, 1 ) );
+                ImgSrcByte = Matrix.Concatenate<byte>( ImgSrcByte, currentbuff );
+                //SaveFullDat(ImgSrcByte,LineCount,UnitCount,BuffCount);
+                evtMapImg( Buf2Img( ImgSrcByte, BuffCount + 1 ), LineCount, UnitCount );
+                Update( ref BuffCount, ref UnitCount, ref LineCount );
+                return true;
+            }
+            catch ( Exception ex )
+            {
+                Console.WriteLine( ex.ToString() );
+                return false;
+            }
+
+        }
+
+        bool TriggerScan( ) {
+            try
+            {
+                Stg.Moveabs( "Y" )( Info.PsYEnd );
+
+                /*Create Func*/
+                var Buf2Img = FnBuff2Img( Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] );
+                var currentbuff = FullBuffdata();
+                evtRealimg( Buf2Img( currentbuff, 1 ) );
+                ImgSrcByte = Matrix.Concatenate<byte>( ImgSrcByte, currentbuff );
+                //SaveFullDat(ImgSrcByte,LineCount,UnitCount,BuffCount);
+                evtMapImg( Buf2Img( ImgSrcByte, BuffCount + 1 ), LineCount, UnitCount );
+                Update( ref BuffCount, ref UnitCount, ref LineCount );
+                return true;
+            }
+            catch ( Exception ex )
+            {
+                Console.WriteLine( ex.ToString() );
+                return false;
+            }
+
+        }
+
+
+
         /*minor func*/
         void InitCount()
         {
@@ -186,7 +262,7 @@ namespace PLImg_V2
             UnitCount = 0;
             LineCount = 0;
         }
-        void Update( int BuffCount , int UnitCount , int LineCount )
+        void Update(ref int BuffCount ,ref int UnitCount ,ref int LineCount )
         {
             if ( BuffCount != Info.BuffLimit ) { BuffCount += 1; }
             else

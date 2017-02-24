@@ -10,10 +10,14 @@ namespace PLImg_V2
     {
         ScanState ScanStatus = ScanState.Wait;
         ScanTypes ScanType = ScanTypes.NonTrig;
+        Dictionary<string,int> ImgWH;
         int                   BuffCount       ;
         int                   LineCount       ;
         int                   UnitCount       ;
         byte[]                ImgSrcByte      ;
         bool                  NeedClearBuf    ;
+
+
+
     }
 }

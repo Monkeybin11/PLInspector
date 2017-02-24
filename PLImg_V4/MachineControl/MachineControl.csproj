@@ -78,15 +78,19 @@
       <HintPath>..\packages\System.Reactive.PlatformServices.3.0.0\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Camera\Dalsa\DalsaCam_ccf_Data.cs" />
     <Compile Include="Camera\Dalsa\DalsaPiranha3_12k.cs" />
+    <Compile Include="Camera\Dalsa\Enum.cs" />
     <Compile Include="Camera\Interface\Cam.cs" />
     <Compile Include="Communication\RS232C.cs" />
     <Compile Include="MathCalc\Indicator.cs" />

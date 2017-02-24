@@ -39,8 +39,6 @@ namespace PLImg_V2
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        string[] XYZ = new string[3] { "X","Y","Z" };
-        
         Core Core = new Core();
         public SeriesCollection seriesbox { get; set; }
         public ChartValues<int> chartV { get; set; }
@@ -66,17 +64,18 @@ namespace PLImg_V2
             InitializeComponent();
             InitImgBox();
             SetImgBoxStretch();
+            InitLocalData();
             DataContext = this;
             ConnectionData cd = new ConnectionData();
-            //Core.ConnectDevice( cd.CameraPath, cd.ControllerIP, cd.RStage );
-            Core.ConnectDevice( cd.CameraPath, cd.DctStagePort, cd.RStage );
-            InitMainMod();
+            Core.ConnectDevice( cd.CameraPath, cd.ControllerIP, cd.RStage );
+            //Core.ConnectDevice( cd.CameraPath, cd.DctStagePort, cd.RStage );
+            InitCore();
         }
 
         #region Display
         void DisplayAF(double input)
         {
-            lblAFV.Content = input.ToString("N4");
+            lblAFV.BeginInvoke(()=> lblAFV.Content = input.ToString("N4") );
         }
 
         void DisplayRealTime(Image<Gray, byte> img)
@@ -107,9 +106,9 @@ namespace PLImg_V2
         #endregion
 
         #region Init
-        void InitMainMod( )
+        void InitCore( )
         {
-            foreach ( var item in XYZ )
+            foreach ( var item in GD.YXZ )
             {
                 StgState[item] = StageEnableState.Enabled;
             }
@@ -162,21 +161,21 @@ namespace PLImg_V2
 
         void InitViewWin( )
         {
-            nudStartXPos.Value = 50;
-            nudStartYPos.Value = 100;
-            nudEndYPos.Value = 170;
+            nudStartXPos.Value = 100;
+            nudStartYPos.Value = 50;
+            nudEndYPos.Value = 100;
             nudXstep.Value = 28.300;
 
-            nudExtime.Value = 400;
-            nudlinerate.Value = 4000;
+            nudExtime.Value = 2400;
+            nudlinerate.Value = 400;
 
-            nudScanbuffNum.Value = 4;
-            nudScanUnitNum.Value = 0;
-            nudScanLineNum.Value = 0;
+            nudScanbuffNum.Value = 11;
+            nudScanUnitNum.Value = 2;
+            nudScanLineNum.Value = 2;
             nudScanSpeed.Value = 1;
 
             nudGoXPos.Value = 100;
-            nudGoYPos.Value = 55;
+            nudGoYPos.Value = 50;
             nudGoZPos.Value = 29.500;
         }
 
@@ -268,7 +267,7 @@ namespace PLImg_V2
         #region Stage
         // common //
         private void btnOrigin_Click( object sender, RoutedEventArgs e ) {
-            foreach ( var item in XYZ ) Core.Stg.Home( item )();
+            foreach ( var item in GD.YXZ ) Core.Stg.Home( item )();
         }
 
         // XYZStage //
@@ -354,7 +353,7 @@ namespace PLImg_V2
 
         #region window Event 
         private void MetroWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e ) {
-            foreach ( var item in XYZ )
+            foreach ( var item in GD.YXZ )
             {
                 Core.Stg.Disable( item )();
                 Core.Stg.Disconnect();
@@ -425,8 +424,14 @@ namespace PLImg_V2
         }
 
 
+
         #endregion
 
-        
+        #region Tab Select Event
+        private void TabItem_Selected( object sender, RoutedEventArgs e ) {
+            Core.Cam.loadconfig
+        }
+
+        #endregion
     }
 }
