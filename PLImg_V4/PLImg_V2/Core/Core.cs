@@ -21,7 +21,6 @@ namespace PLImg_V2
         public event TferSplitImgArr   evtMapImg    ;
         public event TferTrgImgArr     evtTrgImg    ;
         public event TferFeedBackPos   evtFedBckPos ;
-        public event TferScanStatus    evtScanStart ;
         public event TferScanStatus    evtScanEnd   ;
         public event TferNumber        evtSV        ;     
         #endregion  
@@ -35,12 +34,15 @@ namespace PLImg_V2
 
 
         /*GFunc*/
-        public Dictionary<ScanConfig , Action> Reconnector;
+        public Dictionary<ScanConfig , Action> Reconnector = new Dictionary<ScanConfig, Action>();
+        public Dictionary<ScanConfig , Action> ExposureMode = new Dictionary<ScanConfig, Action>();
         public Dictionary<string,Action> StgEnable;
 
         public Action Connect_XYZStage;
         public Action<double> LineRate;
         public Action<double> Exposure;
+        public Action         Exposure_NonTrgMode; 
+        public Action         Exposure_TrgMode; 
         public Action         Grab;
         public Action         Freeze;
         public Action         BufClear;
@@ -53,22 +55,30 @@ namespace PLImg_V2
         public Action<ScanConfig> ConnectDevice( string camPath , string stgPath , string rstagPath )
         {
             Create_Connector( camPath , stgPath , rstagPath );
-            Connect_XYZStage();
-            InitFunc();
-            InitData();
-            foreach ( var item in StgEnable ) item.Value();
-            Reshape2D = FnBuff2Img( ImgWH["H"] , ImgWH["W"] );
-
-            return new Action<ScanConfig>( ( config ) => Reconnector[config]() );
+            return new Action<ScanConfig>( ( config ) => {
+                Reconnector[config]();
+                ExposureMode[config]();
+                Connect_XYZStage();
+                InitFunc();
+                InitData();
+                foreach ( var item in StgEnable ) item.Value();
+                Reshape2D = FnBuff2Img( ImgWH["H"], ImgWH["W"] );
+            } );
         }
 
 
         public void Create_Connector( string camPath , string stgPath , string rstagPath )
         {
             Reconnector.Add( ScanConfig.nonTrigger , Cam.Connect( camPath , ScanConfig.nonTrigger ) );
-            Reconnector.Add( ScanConfig.Trigger_1 , Cam.Connect( camPath , ScanConfig.Trigger_1 ) );
-            Reconnector.Add( ScanConfig.Trigger_2 , Cam.Connect( camPath , ScanConfig.Trigger_2 ) );
-            Reconnector.Add( ScanConfig.Trigger_4 , Cam.Connect( camPath , ScanConfig.Trigger_4 ) );
+            Reconnector.Add( ScanConfig.Trigger_1 ,  Cam.Connect( camPath , ScanConfig.Trigger_1 ) );
+            Reconnector.Add( ScanConfig.Trigger_2 ,  Cam.Connect( camPath , ScanConfig.Trigger_2 ) );
+            Reconnector.Add( ScanConfig.Trigger_4 ,  Cam.Connect( camPath , ScanConfig.Trigger_4 ) );
+
+            ExposureMode.Add( ScanConfig.nonTrigger, Cam.ExposureMode( 2 ) );
+            ExposureMode.Add( ScanConfig.Trigger_1,  Cam.ExposureMode( 6 ) ); 
+            ExposureMode.Add( ScanConfig.Trigger_2,  Cam.ExposureMode( 6 ) ); 
+            ExposureMode.Add( ScanConfig.Trigger_4,  Cam.ExposureMode( 6 ) ); 
+
 
             var stgConnectMode = MachineControl.Stage.Interface.ConnectMode.IP;
             Connect_XYZStage = Stg.Connect( stgPath , stgConnectMode );
@@ -80,6 +90,10 @@ namespace PLImg_V2
             Cam.EvtResist( Cam.Xfer , GrabDoneEvt_Non );
             Exposure = Cam.Exposure();
             LineRate = Cam.LineRate();
+            Exposure_NonTrgMode = Cam.ExposureMode( 2 );
+            Exposure_TrgMode    = Cam.ExposureMode( 6 );
+
+
             Grab = Cam.Grab();
             Freeze = Cam.Freeze();
             BufClear = Cam.BuffClear();

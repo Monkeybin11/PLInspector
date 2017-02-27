@@ -78,6 +78,7 @@ namespace PLImg_V2
         void DisplayRealTime(Image<Gray, byte> img)
         {
             imgboxReal.Image = img;
+            Console.WriteLine( "readl time image is comming0" );
         }
     
         void DisplayBuffNumber(int num)
@@ -124,7 +125,6 @@ namespace PLImg_V2
             Core.evtSV            += new TferNumber( DisplayAF );
             Core.evtMapImg        += new TferSplitImgArr( DisplayFullScanImg );
             Core.evtFedBckPos     += new TferFeedBackPos( DisplayPos );
-            Core.evtScanStart     += new TferScanStatus( ( ) => { Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait; } );
             Core.evtScanEnd       += new TferScanStatus( ( ) => { Mouse.OverrideCursor = null; } );
             Task.Run(()=>Core.GetFeedbackPos());
 
@@ -217,14 +217,17 @@ namespace PLImg_V2
         #region MainWindowEvent
         private void btnLineScan_Click(object sender, RoutedEventArgs e)
         {
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
             StartScan( ScanMode.SingleLine );
         }
         private void btnFullScan_Click(object sender, RoutedEventArgs e)
         {
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
             StartScan( ScanMode.MultiLine );
         }
 
         void StartScan( ScanMode mode ) {
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
             ClearImgBox();
             //ScanDataSet( mode );
             Core.ReadyPos( mode == ScanMode.MultiLine || mode == ScanMode.SingleLine ? ScanTypes.NonTrig : ScanTypes.Trig );
@@ -451,6 +454,7 @@ namespace PLImg_V2
 
         private void btnStartFixAreaScan_Click( object sender , RoutedEventArgs e )
         {
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
             foreach ( var item in SampleConfig )
             {
                 if( item.Value.IsChecked == true ) Core.StartTrigScan(item.Key);

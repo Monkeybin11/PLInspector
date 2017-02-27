@@ -59,7 +59,7 @@ namespace MachineControl.Camera.Dalsa
         public Action Connect( string path , dynamic mode )
         {
             return new Action(( )=> {
-                Disconnect();
+                Disconnect()();
                 mbSession = ( MessageBasedSession ) ResourceManager.GetLocalManager().Open( path );
                 //LoadSetting();
                 //SaveSetting();
@@ -127,6 +127,14 @@ namespace MachineControl.Camera.Dalsa
                 mbSession.Query( "ssf " + value.ToString() + "\r" );
             } );
         }
+
+        public Action ExposureMode( int value ) {
+            return new Action( ( ) => {
+                mbSession.Query( "sem " + value.ToString() + "\r" );
+            } );
+        }
+
+
         #endregion
 
         #region Local
@@ -170,23 +178,23 @@ namespace MachineControl.Camera.Dalsa
             // If need custom path, insert config file path to ConfigFileName 
             switch ( mode ) {
                 case ScanConfig.nonTrigger:
-                    ConfigFile = DalsaCam_ccf_Data.ConfigFile_Non;
-                    ConfigFileName = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFile;
+                    ConfigFileName = DalsaCam_ccf_Data.ConfigFile_Non;
+                    ConfigFile = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFileName;
                     break;
 
                 case ScanConfig.Trigger_1:
-                    ConfigFile = DalsaCam_ccf_Data.ConfigFile_2;
-                    ConfigFileName = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFile;
+                    ConfigFileName = DalsaCam_ccf_Data.ConfigFile_2;
+                    ConfigFile = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFileName;
                     break;
 
                 case ScanConfig.Trigger_2:
-                    ConfigFile = DalsaCam_ccf_Data.ConfigFile_2;
-                    ConfigFileName = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFile;
+                    ConfigFileName = DalsaCam_ccf_Data.ConfigFile_2;
+                    ConfigFile = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFileName;
                     break;
 
                 case ScanConfig.Trigger_4:
-                    ConfigFile = DalsaCam_ccf_Data.ConfigFile_4;
-                    ConfigFileName = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFile;
+                    ConfigFileName = DalsaCam_ccf_Data.ConfigFile_4;
+                    ConfigFile = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFileName;
                     break;
             }
         }

@@ -122,6 +122,15 @@ namespace MachineControl.Camera.Dalsa
                 mbSession.Query( "ssf " + value.ToString() + "\r" );
             } );
         }
+
+        public Action<int> ExposureMode( ) {
+            return new Action<int>((value)=> {
+                mbSession.Query( "sem " + value.ToString() + "\r" );
+
+            } );
+
+
+        }
         #endregion
 
         #region Local

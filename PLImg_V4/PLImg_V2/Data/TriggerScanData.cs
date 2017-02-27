@@ -39,9 +39,9 @@ namespace PLImg_V2.Data
 
         void CreateEndPoint() {
             EndYPos = new Dictionary<ScanConfig , double>();
-            EndYPos.Add( ScanConfig.Trigger_1 , 49 );
-            EndYPos.Add( ScanConfig.Trigger_2 , 49 );
-            EndYPos.Add( ScanConfig.Trigger_4 , 49 );
+            EndYPos.Add( ScanConfig.Trigger_1 , 100 );
+            EndYPos.Add( ScanConfig.Trigger_2 , 150 );
+            EndYPos.Add( ScanConfig.Trigger_4 , 200 );
 
         }
     }
