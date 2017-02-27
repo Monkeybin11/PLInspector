@@ -10,6 +10,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Accord.Math;
 using MachineControl.MathClac;
+using PLImg_V2.Data;
 
 namespace PLImg_V2
 {
@@ -18,6 +19,7 @@ namespace PLImg_V2
         #region Event
         public event TferImgArr        evtRealimg   ;
         public event TferSplitImgArr   evtMapImg    ;
+        public event TferTrgImgArr     evtTrgImg    ;
         public event TferFeedBackPos   evtFedBckPos ;
         public event TferScanStatus    evtScanStart ;
         public event TferScanStatus    evtScanEnd   ;
@@ -28,72 +30,82 @@ namespace PLImg_V2
         public AcsCtrlXYZ Stg        = new AcsCtrlXYZ();
         public ScanInfo Info         = new ScanInfo();
         public TrgScanInfo TrgInfo   = new TrgScanInfo();
+        public TriggerScanData TrigScanData = new TriggerScanData();
         Indicator Idc = new Indicator();
 
 
         /*GFunc*/
-        public Action Connect_NonTrigger;
-        public Action Connect_Trigger1;
-        public Action Connect_Trigger2;
-        public Action Connect_Trigger4;
+        public Dictionary<ScanConfig , Action> Reconnector;
+        public Dictionary<string,Action> StgEnable;
+
         public Action Connect_XYZStage;
-
-
         public Action<double> LineRate;
         public Action<double> Exposure;
         public Action         Grab;
         public Action         Freeze;
         public Action         BufClear;
+
         public Func<byte[]>   FullBuffdata;
         public Func<byte[]>   SingleBuffdata;
         public Func<byte[], int, Image<Gray, byte>> Reshape2D;
-        public Dictionary<string,Action> StgEnable;
 
-        public void ConnectDevice( string camPath , string stgPath , string rstagPath ) {
-            Connect_NonTrigger();
+        #region Init
+        public Action<ScanConfig> ConnectDevice( string camPath , string stgPath , string rstagPath )
+        {
+            Create_Connector( camPath , stgPath , rstagPath );
             Connect_XYZStage();
             InitFunc();
             InitData();
             foreach ( var item in StgEnable ) item.Value();
-            Reshape2D = FnBuff2Img( ImgWH["H"], ImgWH["W"] );
+            Reshape2D = FnBuff2Img( ImgWH["H"] , ImgWH["W"] );
+
+            return new Action<ScanConfig>( ( config ) => Reconnector[config]() );
         }
 
-        /* GFun Create */
-        public void Create_Connector( string camPath, string stgPath, string rstagPath )
+
+        public void Create_Connector( string camPath , string stgPath , string rstagPath )
         {
-            Connect_NonTrigger = Cam.Connect( camPath  , ScanConfig.nonTrigger) ;
-            Connect_Trigger1  =  Cam.Connect( camPath  , ScanConfig.Trigger_1);
-            Connect_Trigger2  =  Cam.Connect( camPath  , ScanConfig.Trigger_2);
-            Connect_Trigger4  =  Cam.Connect( camPath, ScanConfig.Trigger_4);
+            Reconnector.Add( ScanConfig.nonTrigger , Cam.Connect( camPath , ScanConfig.nonTrigger ) );
+            Reconnector.Add( ScanConfig.Trigger_1 , Cam.Connect( camPath , ScanConfig.Trigger_1 ) );
+            Reconnector.Add( ScanConfig.Trigger_2 , Cam.Connect( camPath , ScanConfig.Trigger_2 ) );
+            Reconnector.Add( ScanConfig.Trigger_4 , Cam.Connect( camPath , ScanConfig.Trigger_4 ) );
+
             var stgConnectMode = MachineControl.Stage.Interface.ConnectMode.IP;
-            Connect_XYZStage = Stg.Connect( stgPath, stgConnectMode );
+            Connect_XYZStage = Stg.Connect( stgPath , stgConnectMode );
         }
 
-        public void InitFunc( ) {
-            Cam.EvtResist( Cam.Xfer, GrabDoneEvt );
-            Exposure       = Cam.Exposure();
-            LineRate       = Cam.LineRate();
-            Grab           = Cam.Grab();
-            Freeze         = Cam.Freeze();
-            BufClear       = Cam.BuffClear();
-            FullBuffdata   = Cam.BuffGetAll( Cam.Buffers );
+
+        public void InitFunc()
+        {
+            Cam.EvtResist( Cam.Xfer , GrabDoneEvt_Non );
+            Exposure = Cam.Exposure();
+            LineRate = Cam.LineRate();
+            Grab = Cam.Grab();
+            Freeze = Cam.Freeze();
+            BufClear = Cam.BuffClear();
+            FullBuffdata = Cam.BuffGetAll( Cam.Buffers );
             SingleBuffdata = Cam.BuffGetLine( Cam.Buffers );
 
-            StgEnable = new Dictionary<string, Action>();
+            StgEnable = new Dictionary<string , Action>();
             foreach ( var item in GD.YXZ ) StgEnable.Add( item , Stg.Enable( item ) );
         }
 
-        public void InitData( ) {
+        public void InitData()
+        {
             ImgWH = Cam.GetBuffWH();
         }
 
-        void GrabDoneEvt( object sender , SapXferNotifyEventArgs evt ) {
+        #endregion
+
+        #region GrabDoneEvent Method
+        void GrabDoneEvt_Non( object sender , SapXferNotifyEventArgs evt )
+        {
             Console.WriteLine( "IN Evt" );
             switch ( ScanStatus )
             {
                 case ScanState.Stop:
                     ScanStatus = ScanState.Wait;
-                    
+
                     break;
 
                 case ScanState.Pause:
@@ -101,15 +113,38 @@ namespace PLImg_V2
                     break;
 
                 case ScanState.Start:
-                    StartProcess(ScanType);
+                    StartProcess( ScanType );
                     break;
 
                 default:
-                    evtRealimg( Reshape2D( FullBuffdata() , 1) );
-                    Task.Run(()=> TferVariance( SingleBuffdata() ) );
+                    evtRealimg( Reshape2D( FullBuffdata() , 1 ) );
+                    Task.Run( () => TferVariance( SingleBuffdata() ) );
                     break;
             }
         }
+
+        void GrabDoneEvt_Trg( object sender , SapXferNotifyEventArgs evt )
+        {
+            var Buf2Img = FnBuff2Img( Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] );
+            var currentbuff = FullBuffdata();
+            evtTrgImg( Buf2Img( currentbuff , 1 ) , TrigCount ); // 1 Trigger = 1 Buffer
+            Freeze();
+            TrigCount += 1;
+            if ( TrigCount < TrigLimit )
+            {
+                StgReadyTrigScan( TrigCount );
+                Grab();
+                System.Threading.Thread.Sleep( 100 );
+                MoveXYstg( "Y" , TrigScanData.EndYPos[CurrentConfig] );
+            }
+            else {
+                evtScanEnd();
+            }
+        }
+        #endregion
+
+
+
 
         public void TferVariance( byte[] src ) {
             try
@@ -177,24 +212,56 @@ namespace PLImg_V2
 
         public void ReadyNonTrigScan( ) {
 
-
-
         }
 
         public void ScanStart_Non( ) {
 
-
         }
 
-        public void ReadyTrigScan(ScanConfig config ) {
-        
+     
 
+        public void StartTrigScan( ScanConfig config ) {
+            CurrentConfig = config;
+            TrigLimit = SetTriggerLimit( config );
+            TrigCount = 0;
+            StgReadyTrigScan( 0 );
 
+            System.Threading.Thread.Sleep( 100 );
+            ResetCamCofnig( config );
+
+            Grab();
+            System.Threading.Thread.Sleep( 100 );
+
+            MoveXYstg( "Y" , TrigScanData.EndYPos[config] );
         }
 
-        public void ScanStart_Trig(ScanConfig config ) {
+        void StgReadyTrigScan(int triggerNum)
+        {
+            MoveXYstg( "Y" , TrigScanData.StartYPos );
+            MoveXYstg( "X" , TrigScanData.StartXPos + TrigScanData.XStep_Size* triggerNum );
+            Stg.WaitEps( "Y" )( TrigScanData.StartYPos , 0.005 );
+            Stg.WaitEps( "X" )( TrigScanData.StartYPos , 0.005 );
+            Stg.SetSpeed( "Y" )( TrigScanData.Scan_Stage_Speed);
+        }
 
+        void ResetCamCofnig(ScanConfig config) {
+            Reconnector[config]();
+            Cam.EvtResist(Cam.Xfer , GrabDoneEvt_Trg);
+        }
 
+        int SetTriggerLimit( ScanConfig config ) {
+            switch ( config ) {
+                case ScanConfig.Trigger_1:
+                    return 1;
+
+                case ScanConfig.Trigger_2:
+                    return 2;
+
+                case ScanConfig.Trigger_4:
+                    return 4;
+                default:
+                    return 1;
+            }
         }
     }
 }

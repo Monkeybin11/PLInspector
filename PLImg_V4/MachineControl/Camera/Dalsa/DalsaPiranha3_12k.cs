@@ -68,14 +68,6 @@ namespace MachineControl.Camera.Dalsa
             } );
         }
 
-        public Action ConfigRefresh( string configPath ) {
-            return new Action(()=> {
-                ConfigFile = configPath;
-                CreateCamObj();
-                SaveSetting();
-            } );
-        }
-
         public Action Disconnect()
         {
             return new Action( ()=> {
@@ -172,12 +164,14 @@ namespace MachineControl.Camera.Dalsa
 
         #region Config
         void LoadConfig( ScanConfig mode ) {
-            ServerName = DalsaCam_ccf_Data.ServerName;
+            ServerName    = DalsaCam_ccf_Data.ServerName;
             ResourceIndex = DalsaCam_ccf_Data.ResourceIndex;
 
+            // If need custom path, insert config file path to ConfigFileName 
             switch ( mode ) {
                 case ScanConfig.nonTrigger:
-
+                    ConfigFile = DalsaCam_ccf_Data.ConfigFile_Non;
+                    ConfigFileName = DalsaCam_ccf_Data.ConfigFileNameBase + ConfigFile;
                     break;
 
                 case ScanConfig.Trigger_1:

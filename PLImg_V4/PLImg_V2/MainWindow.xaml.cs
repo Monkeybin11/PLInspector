@@ -25,6 +25,7 @@ using Accord.Math;
 using System.Windows.Forms;
 using LiveCharts;
 using LiveCharts.Wpf;
+using MachineControl.Camera.Dalsa;
 
 namespace PLImg_V2
 {
@@ -43,22 +44,12 @@ namespace PLImg_V2
         public SeriesCollection seriesbox { get; set; }
         public ChartValues<int> chartV { get; set; }
         ImageBox[,] ImgBoxArr;
-
+        ImageBox[] TrgImgBoxArr;
+        Dictionary<ScanConfig, System.Windows.Controls.RadioButton> SampleConfig;
         Dictionary<string,StageEnableState> StgState;
-
-        
-        
-        
         Action<ScanMode> SetScanInfo;
 
-        void InitFunc() {
-            SetScanInfo = Core.ScanInfoSet(
-                         ( int ) nudStartXPos.Value , ( int ) nudStartYPos.Value , ( int ) nudEndYPos.Value , ( double ) nudXstep.Value ,
-                         -1 , -1 ,
-                         ( int ) nudScanbuffNum.Value , ( int ) nudScanUnitNum.Value , ( int ) nudScanLineNum.Value ,
-                         ( int ) nudScanSpeed.Value );
-        }
-
+       
         public MainWindow()
         {
             InitializeComponent();
@@ -67,12 +58,18 @@ namespace PLImg_V2
             InitLocalData();
             DataContext = this;
             ConnectionData cd = new ConnectionData();
-            Core.ConnectDevice( cd.CameraPath, cd.ControllerIP, cd.RStage );
+            Core.ConnectDevice( cd.CameraPath, cd.ControllerIP, cd.RStage )( ScanConfig.nonTrigger );
             //Core.ConnectDevice( cd.CameraPath, cd.DctStagePort, cd.RStage );
             InitCore();
         }
 
         #region Display
+
+        void DisplayTrgImg( Image<Gray , byte> img , int lineNum )
+        {
+            TrgImgBoxArr[lineNum].Image = img;
+        }
+
         void DisplayAF(double input)
         {
             lblAFV.BeginInvoke(()=> lblAFV.Content = input.ToString("N4") );
@@ -106,6 +103,16 @@ namespace PLImg_V2
         #endregion
 
         #region Init
+        void InitFunc()
+        {
+            SetScanInfo = Core.ScanInfoSet(
+                         ( int ) nudStartXPos.Value , ( int ) nudStartYPos.Value , ( int ) nudEndYPos.Value , ( double ) nudXstep.Value ,
+                         -1 , -1 ,
+                         ( int ) nudScanbuffNum.Value , ( int ) nudScanUnitNum.Value , ( int ) nudScanLineNum.Value ,
+                         ( int ) nudScanSpeed.Value );
+        }
+
+
         void InitCore( )
         {
             foreach ( var item in GD.YXZ )
@@ -113,6 +120,7 @@ namespace PLImg_V2
                 StgState[item] = StageEnableState.Enabled;
             }
             Core.evtRealimg       += new TferImgArr( DisplayRealTime );
+            Core.evtTrgImg        += new TferTrgImgArr( DisplayTrgImg );
             Core.evtSV            += new TferNumber( DisplayAF );
             Core.evtMapImg        += new TferSplitImgArr( DisplayFullScanImg );
             Core.evtFedBckPos     += new TferFeedBackPos( DisplayPos );
@@ -126,6 +134,12 @@ namespace PLImg_V2
 
         void InitImgBox()
         {
+            TrgImgBoxArr = new ImageBox[4];
+            TrgImgBoxArr[0] = imgboxTrig0;
+            TrgImgBoxArr[1] = imgboxTrig1;
+            TrgImgBoxArr[2] = imgboxTrig2;
+            TrgImgBoxArr[3] = imgboxTrig3;
+
             ImgBoxArr = new ImageBox[4,4];
             ImgBoxArr[0, 0] = imgboxScan00;
             ImgBoxArr[0, 1] = imgboxScan01;
@@ -184,6 +198,12 @@ namespace PLImg_V2
             StgState.Add("Y", new StageEnableState());
             StgState.Add("X", new StageEnableState());
             StgState.Add("Z", new StageEnableState());
+
+            SampleConfig = new Dictionary<ScanConfig , System.Windows.Controls.RadioButton>();
+            SampleConfig.Add( ScanConfig.Trigger_1  ,rdb1inch);
+            SampleConfig.Add( ScanConfig.Trigger_2  ,rdb2inch);
+            SampleConfig.Add( ScanConfig.Trigger_4  ,rdb4inch);
+
         }
 
         void DisplayPos(double[] inputPos)
@@ -203,17 +223,15 @@ namespace PLImg_V2
         {
             StartScan( ScanMode.MultiLine );
         }
-        private void btnTrgScanStart_Click( object sender , RoutedEventArgs e )
-        {
-            StartScan( ScanMode.TrgCustom );
-        }
 
         void StartScan( ScanMode mode ) {
             ClearImgBox();
-            ScanDataSet( mode );
+            //ScanDataSet( mode );
             Core.ReadyPos( mode == ScanMode.MultiLine || mode == ScanMode.SingleLine ? ScanTypes.NonTrig : ScanTypes.Trig );
             Core.ScanStart();
         }
+
+        /*
         void ScanDataSet( ScanMode mode ) {
             if ( mode == ScanMode.MultiLine || mode == ScanMode.SingleLine )
             {
@@ -236,8 +254,8 @@ namespace PLImg_V2
             {
                 Core.ScanInfoSet( ( int ) nudTrgYStart.Value )( mode );
             }
-
         }
+        */
 
         void ScanStart( ) { Mouse.OverrideCursor = Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;}
         void ScanEnd( ) { Mouse.OverrideCursor = null; }
@@ -428,10 +446,15 @@ namespace PLImg_V2
         #endregion
 
         #region Tab Select Event
-        private void TabItem_Selected( object sender, RoutedEventArgs e ) {
-            Core.Cam.loadconfig
-        }
-
+       
         #endregion
+
+        private void btnStartFixAreaScan_Click( object sender , RoutedEventArgs e )
+        {
+            foreach ( var item in SampleConfig )
+            {
+                if( item.Value.IsChecked == true ) Core.StartTrigScan(item.Key);
+            }
+        }
     }
 }

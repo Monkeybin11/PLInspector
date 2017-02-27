@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 namespace PLImg_V2
 {
     public delegate void TferbyteArr( byte[] imgarr );
-    public delegate void TferImgArr( Image<Gray , Byte> img );
+    public delegate void TferImgArr( Image<Gray , byte> img );
+    public delegate void TferTrgImgArr( Image<Gray , byte> img , int lineNum);
     public delegate void TferScanStatus();
     public delegate void TferSplitImgArr( Image<Gray , Byte> img , int lineNum , int unitNum );
     public delegate void TferFeedBackPos( double[] XYZPos );
