@@ -9,19 +9,9 @@ namespace PLImg_V2
 {
     public partial class Core
     {
-        ScanState ScanStatus = ScanState.Wait;
-        ScanTypes ScanType = ScanTypes.NonTrig;
         ScanConfig CurrentConfig = ScanConfig.nonTrigger;
         Dictionary<string,int> ImgWH;
-        int                   BuffCount       ;
-        int                   LineCount       ;
-        int                   UnitCount       ;
-        byte[]                ImgSrcByte      ;
-        bool                  NeedClearBuf    ;
         int                   TrigCount       ;
         int                   TrigLimit       ;  
-
-
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Accord.Math;
+using MachineControl.Camera.Dalsa;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,288 +10,65 @@ namespace PLImg_V2
 {
     public partial class Core
     {
-        public Action<ScanMode> ScanInfoSet(
-            int xstart , int ystart , int yend , double xStep ,
-            int bufW , int bufH ,
-            int buflimit , int unitlimit , int linelimit ,
-            int sped )
+        public void ReadyNonTrigScan()
         {
-            return new Action<ScanMode>( ( mode ) =>
-            {
-                ScanType = ScanTypes.NonTrig;
-                Info.SetBufInfo( bufW , bufH );
-                Info.SetScanSpeed( sped );
-                switch ( mode )
-                {
-                    case ScanMode.MultiLine:
-                        Info.SetPos( xstart , ystart , yend , xStep );
-                        Info.SetLimit( buflimit-1 , unitlimit-1 , linelimit-1 );
-                        break;
 
-                    case ScanMode.SingleLine:
-                        Info.SetPos( xstart , ystart , yend );
-                        Info.SetLimit( buflimit , unitlimit );
-                        break;
-                }
-            } );
         }
 
-        public Action<ScanMode> ScanInfoSet(
-            int ystart , int bufH = -1　,int ystep = -1 , int linenum = -1 ,
-            int sped = -1 )
+        public void ScanStart_Non()
         {
-            return new Action<ScanMode>( ( mode ) =>{
-                ScanType = ScanTypes.Trig;
-                switch ( mode )
-                {
-                    case ScanMode.TrgCustom:
-                        TrgInfo.SetTrgInfo( ystart , bufH , ystep , linenum , sped );
-                        break;
 
-                    case ScanMode.Trg2Inch:
-                        TrgInfo.SetTrgInfo( WaferSize.Size2 );
-                        break;
-
-                    case ScanMode.Trg4Inch:
-                        TrgInfo.SetTrgInfo( WaferSize.Size4 );
-                        break;
-                }
-            } );
         }
-        public bool ReadyPos(ScanTypes type){
-            try
-            {
-                var xSpeed =  Stg.SetSpeed( "X" );
-                var ySpeed =  Stg.SetSpeed( "Y" );
-                xSpeed( 200 );
-                ySpeed( 200 );
-                switch ( type ) {
-                    case ScanTypes.NonTrig:
-                        Stg.Moveabs( "X" )( Info.PsXStart );
-                        Stg.Moveabs( "Y" )( Info.PsYStart );
-                        Stg.WaitEps( "X" )( Info.PsXStart , 0.005 );
-                        Stg.WaitEps( "Y" )( Info.PsYStart , 0.005 );
-                        ySpeed( Info.ScanSpeed );
-                        return true;
 
-                    case ScanTypes.Trig:
-                        Stg.Moveabs( "X" )( TrgInfo.PsXStart );
-                        Stg.Moveabs( "Y" )( TrgInfo.PsYStart );
-                        Stg.WaitEps( "X" )( TrgInfo.PsXStart , 0.005 );
-                        Stg.WaitEps( "Y" )( TrgInfo.PsYStart , 0.005 );
-                        ySpeed( TrgInfo.ScanSpeed );
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( ex.ToString() );
-                return false;
-            }
-        }
-        public bool ScanStart(  )
+
+
+        public void StartTrigScan( ScanConfig config )
         {
-            try
-            {
-                InitCount();
-                ImgSrcByte = new byte[0];
-                ScanStatus = ScanState.Start;
-                NeedClearBuf = true;
-                return true;
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( ex.ToString() );
-                return false;
-            }
+            CurrentConfig = config;
+            TrigLimit = SetTriggerLimit( config );
+            TrigCount = 0;
+            StgReadyTrigScan( 0, config );
+
+            System.Threading.Thread.Sleep( 100 );
+            ResetCamCofnig( config );
+            RunStgBuffer( config );
+            Grab();
+            System.Threading.Thread.Sleep( 100 );
+
+
+            ScanMoveXYstg( "Y", TrigScanData.EndYPos[config], TrigScanData.Scan_Stage_Speed );
         }
 
-        // 여기의 함수들을 스캔 타입에따라 정해준다. 논트리거 방식이냐 트리거 방식이냐 
-        /*Scan process func*/
-
-        bool StopProcess()
+        void StgReadyTrigScan( int triggerNum, ScanConfig config )
         {
-            try
-            {
-                ScanStatus = ScanState.Wait;
-                NeedClearBuf = true;
-                Freeze();
-                System.Threading.Thread.Sleep( 100 );
-                Grab();
-                return true;
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( ex.ToString() );
-                return false;
-            }
+            MoveXYstg( "Y", TrigScanData.StartYPos[config] );
+            MoveXYstg( "X", TrigScanData.StartXPos[config] + TrigScanData.XStep_Size * triggerNum );
+            Stg.WaitEps( "Y" )( TrigScanData.StartYPos[config], 0.005 );
+            Stg.WaitEps( "X" )( TrigScanData.StartXPos[config], 0.005 );
+            Stg.SetSpeed( "Y" )( TrigScanData.Scan_Stage_Speed );
         }
 
-        bool PauseProcess( int linecount )
+        void ResetCamCofnig( ScanConfig config )
         {
-            try
-            {
-                var xTargetPos = Info.PsXStart - Info.XStep * linecount;
-                Stg.WaitEps( "Y" )( Info.PsYEnd , 0.01 );
-                MoveXYstg( "Y" , Info.PsYStart );
-                MoveXYstg( "X" , xTargetPos );
-                Stg.WaitEps( "Y" )( Info.PsYStart , 0.01 );
-                Stg.WaitEps( "X" )( xTargetPos , 0.01 );
-                Stg.SetSpeed( "Y" )( Info.ScanSpeed );
-                Stg.Moveabs( "Y" )( Info.PsYEnd );
-                ScanStatus = ScanState.Start;
-                NeedClearBuf = true;
-                return true;
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( ex.ToString() );
-                return false;
-            }
+            Reconnector[config]();
+            Cam.EvtResist( Cam.Xfer, GrabDoneEvt_Trg );
         }
 
-        bool StartProcess( ScanTypes type )
+        int SetTriggerLimit( ScanConfig config )
         {
-            try
+            switch ( config )
             {
-                if ( NeedClearBuf )
-                {
-                    Freeze();
-                    System.Threading.Thread.Sleep( 500 );
-                    //Cam.Buffers.Destroy();
-                    //Cam.Buffers.Create();
-                    Cam.BuffClear()();
-                    System.Threading.Thread.Sleep( 50 );
-                }
-                Stg.Moveabs( "Y" )( Info.PsYEnd );
-                if ( NeedClearBuf )
-                {
-                    NeedClearBuf = false;
-                    Grab();
-                }
+                case ScanConfig.Trigger_1:
+                    return 1;
 
+                case ScanConfig.Trigger_2:
+                    return 2;
 
-                /*Create Func*/
-                var Buf2Img = FnBuff2Img( Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] );
-                var currentbuff = FullBuffdata();
-                evtRealimg( Buf2Img( currentbuff , 1 ) );
-                ImgSrcByte = Matrix.Concatenate<byte>( ImgSrcByte , currentbuff );
-                //SaveFullDat(ImgSrcByte,LineCount,UnitCount,BuffCount);
-                evtMapImg( Buf2Img( ImgSrcByte , BuffCount + 1 ) , LineCount , UnitCount );
-                Update(ref BuffCount ,ref UnitCount ,ref LineCount );
-                return true;
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( ex.ToString() );
-                return false;
+                case ScanConfig.Trigger_4:
+                    return 4;
+                default:
+                    return 1;
             }
         }
-
-
-
-        /* Sub StartScan Method */
-        bool NonTriggerScan( ) {
-            try
-            {
-                if ( NeedClearBuf )
-                {
-                    Freeze();
-                    System.Threading.Thread.Sleep( 500 );
-                    //Cam.Buffers.Destroy();
-                    //Cam.Buffers.Create();
-                    Cam.BuffClear()();
-                    System.Threading.Thread.Sleep( 50 );
-                }
-                Stg.Moveabs( "Y" )( Info.PsYEnd );
-                if ( NeedClearBuf )
-                {
-                    NeedClearBuf = false;
-                    Grab();
-                }
-
-
-                /*Create Func*/
-                var Buf2Img = FnBuff2Img( Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] );
-                var currentbuff = FullBuffdata();
-                evtRealimg( Buf2Img( currentbuff, 1 ) );
-                ImgSrcByte = Matrix.Concatenate<byte>( ImgSrcByte, currentbuff );
-                //SaveFullDat(ImgSrcByte,LineCount,UnitCount,BuffCount);
-                evtMapImg( Buf2Img( ImgSrcByte, BuffCount + 1 ), LineCount, UnitCount );
-                Update( ref BuffCount, ref UnitCount, ref LineCount );
-                return true;
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( ex.ToString() );
-                return false;
-            }
-
-        }
-
-        bool TriggerScan( ) {
-            try
-            {
-                Stg.Moveabs( "Y" )( Info.PsYEnd );
-
-                /*Create Func*/
-                var Buf2Img = FnBuff2Img( Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] );
-                var currentbuff = FullBuffdata();
-                evtRealimg( Buf2Img( currentbuff, 1 ) );
-                ImgSrcByte = Matrix.Concatenate<byte>( ImgSrcByte, currentbuff );
-                //SaveFullDat(ImgSrcByte,LineCount,UnitCount,BuffCount);
-                evtMapImg( Buf2Img( ImgSrcByte, BuffCount + 1 ), LineCount, UnitCount );
-                Update( ref BuffCount, ref UnitCount, ref LineCount );
-                return true;
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( ex.ToString() );
-                return false;
-            }
-
-        }
-
-
-
-        /*minor func*/
-        void InitCount()
-        {
-            BuffCount = 0;
-            UnitCount = 0;
-            LineCount = 0;
-        }
-        void Update(ref int BuffCount ,ref int UnitCount ,ref int LineCount )
-        {
-            if ( BuffCount != Info.BuffLimit ) { BuffCount += 1; }
-            else
-            {
-                ImgSrcByte = null;
-                ImgSrcByte = new byte[0];
-                BuffCount = 0;
-                if ( UnitCount == Info.UnitLimit )
-                {
-                    UnitCount = 0;
-                    if ( LineCount == Info.LineLimit )
-                    {
-                        ScanStatus = ScanState.Stop;
-                    }
-                    else
-                    {
-                        LineCount += 1;
-                        ScanStatus = ScanState.Pause;
-                    }
-                }
-                else { UnitCount += 1; }
-            }
-        }
-
-        void ScanStart_non() { }
-
-        void ScanStart_trg() { }
-
-
     }
 }

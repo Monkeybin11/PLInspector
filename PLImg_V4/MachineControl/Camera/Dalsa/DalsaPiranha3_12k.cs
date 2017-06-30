@@ -107,7 +107,7 @@ namespace MachineControl.Camera.Dalsa
         public Action<double> Exposure()
         {
             return new Action<double>( (double value)=> {
-                mbSession.Query( "set " + value.ToString() + "\r" );
+                //mbSession.Query( "set " + value.ToString() + "\r" );
             } );
         }
 
@@ -124,13 +124,13 @@ namespace MachineControl.Camera.Dalsa
         public Action<double> LineRate()
         {
             return new Action<double>( ( double value ) => {
-                mbSession.Query( "ssf " + value.ToString() + "\r" );
+                //mbSession.Query( "ssf " + value.ToString() + "\r" );
             } );
         }
 
         public Action ExposureMode( int value ) {
             return new Action( ( ) => {
-                mbSession.Query( "sem " + value.ToString() + "\r" );
+                //mbSession.Query( "sem " + value.ToString() + "\r" );
             } );
         }
 

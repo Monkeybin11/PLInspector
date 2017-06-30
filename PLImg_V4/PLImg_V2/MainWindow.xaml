@@ -36,7 +36,7 @@
                         <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="400" Height="500" Margin="5,0,5,0"/>
                         
                         <TabControl>
-                            <TabItem Header="Scan Setting" FontSize="18">
+                            <TabItem Header="Scan Setting" FontSize="14">
                                 <Grid Grid.Row="0" >
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -63,7 +63,7 @@
                                     <mahapps:NumericUpDown x:Name="nudScanSpeed"   Grid.Row="2" Grid.Column="1"  Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" StringFormat="0" />
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Stage" FontSize="18">
+                            <TabItem Header="Control Device" FontSize="14">
                                 <Grid x:Name="gridflyback" Grid.Row="1" >
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -80,11 +80,10 @@
                                         <RowDefinition Height="47"/>
                                         <RowDefinition Height="47"/>
                                     </Grid.RowDefinitions>
-
-                                    <Button x:Name ="btnOrigin"      Grid.Row="0" Grid.Column="0" Content="origin"       Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnOrigin_Click"/>
-                                    <Button x:Name ="btnROrigin"     Grid.Row="1" Grid.Column="0" Content="ROrigin"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnROrigin_Click"/>
-                                    <Button x:Name ="btnRForceStop"  Grid.Row="1" Grid.Column="1" Content="RForce Stop"  Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" FontSize="13" Click="btnRForceStop_Click"/>
-
+                                    <Button x:Name ="btnGrap"       Grid.Row="0" Grid.Column="0" Content="Grap"        Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnGrap_Click"/>
+                                    <Button x:Name ="btnFreeze"     Grid.Row="0" Grid.Column="1" Content="Freeze"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnFreeze_Click"/>
+                                    <Button x:Name ="btnOrigin"      Grid.Row="1" Grid.Column="0" Content="origin"       Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnOrigin_Click"/>
+                                    <Button x:Name ="btnROrigin"     Grid.Row="1" Grid.Column="1" Content="ROrigin"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnROrigin_Click"/>
                                     <Button x:Name ="btnXMove"      Grid.Row="2" Grid.Column="0" Content="X Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnXMove_Click"/>
                                     <Button x:Name ="btnYMove"      Grid.Row="3" Grid.Column="0" Content="Y Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnYMove_Click"/>
                                     <Button x:Name ="btnZMove"      Grid.Row="4" Grid.Column="0" Content="Z Move (mm)"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnZMove_Click"/>
@@ -102,54 +101,11 @@
                                     <mahapps:NumericUpDown x:Name="nudGoZPos" StringFormat="0.000" Grid.Row="4" Grid.Column="1" Height="24" Width="120" Maximum="49"   Minimum="0"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" HasDecimals="True" />
                                     <mahapps:NumericUpDown x:Name="nudGoRPos" StringFormat="0.00" Grid.Row="5" Grid.Column="1" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="46,10,10,10" />
 
-                                </Grid>
-                            </TabItem>
-                            <TabItem Header="Single Scan" FontSize="18">
-                                <Grid Grid.Row="1" Width="370" Height="495" Margin="5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                        <RowDefinition Height="47"/>
-                                    </Grid.RowDefinitions>
-                                    <Button x:Name ="btnFullScan"   Grid.Row="1" Grid.Column="0" Content="Full Scan"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnFullScan_Click"/>
-                                    <Button x:Name ="btnLineScan"   Grid.Row="1" Grid.Column="1" Content="Line Scan"   Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnLineScan_Click"/>
-                                    <Button x:Name ="btnGrap"       Grid.Row="2" Grid.Column="0" Content="Grap"        Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnGrap_Click"/>
-                                    <Button x:Name ="btnFreeze"     Grid.Row="2" Grid.Column="1" Content="Freeze"      Width="120"   VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" Click="btnFreeze_Click"/>
                                     
-                                    <UniformGrid Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Columns="3" Rows="2">
-                                        <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Content="Buff N" VerticalAlignment="Center"  HorizontalAlignment="Center" Margin="3,10,3,10" FontSize="10" />
-                                        <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Content="Unit N" VerticalAlignment="Center"  HorizontalAlignment="Center" Margin="3,10,3,10" FontSize="10" />
-                                        <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Content="line N" VerticalAlignment="Center"  HorizontalAlignment="Center" Margin="3,10,3,10" FontSize="10" />
-
-                                        <mahapps:NumericUpDown x:Name="nudScanbuffNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="1" />
-                                        <mahapps:NumericUpDown x:Name="nudScanUnitNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="0"/>
-                                        <mahapps:NumericUpDown x:Name="nudScanLineNum"    StringFormat="0" Height="24" Width="80" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="3,10,3,10" Maximum="9000" Minimum="0"/>
-
-                                    </UniformGrid>
-
-                                    <Label Grid.Row="4" FontWeight="Bold" Content="Start XPosition"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
-                                    <Label Grid.Row="5" FontWeight="Bold" Content="Start YPosition"  VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
-                                    <Label Grid.Row="6" FontWeight="Bold" Content="End YPosition"    VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
-                                    <Label Grid.Row="7" FontWeight="Bold" Content="X Step"           VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" FontSize="13" />
-
-                                    <mahapps:NumericUpDown x:Name="nudStartXPos" Grid.Row="4" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
-                                    <mahapps:NumericUpDown x:Name="nudStartYPos" Grid.Row="5" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
-                                    <mahapps:NumericUpDown x:Name="nudEndYPos"   Grid.Row="6" Grid.Column="1"  StringFormat="0" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
-                                    <mahapps:NumericUpDown x:Name="nudXstep"   Grid.Row="7" Grid.Column="1" HasDecimals="True"   StringFormat="0.000" Height="24" Width="120" VerticalAlignment="Center"  HorizontalAlignment="Left" Margin="40,10,10,10" />
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Trigger Scan" FontSize="18">
+                            
+                            <TabItem Header="Trigger Scan" FontSize="14">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="150*"/>

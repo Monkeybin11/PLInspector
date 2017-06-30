@@ -92,6 +92,14 @@ namespace MachineControl.Stage.ACSController
             } );
         }
 
+        public void StartTrigger(int buffnum) {
+            Ch.RunBuffer( buffnum, "", Ch.ACSC_ASYNCHRONOUS, ref pWait );
+        }
+        public void StopTrigger( int buffnum )
+        {
+            Ch.StopBuffer( buffnum, Ch.ACSC_ASYNCHRONOUS, ref pWait );
+        }
+
         #endregion
 
         #region Local

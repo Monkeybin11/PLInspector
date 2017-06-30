@@ -18,7 +18,6 @@ namespace PLImg_V2
     {
         #region Event
         public event TferImgArr        evtRealimg   ;
-        public event TferSplitImgArr   evtMapImg    ;
         public event TferTrgImgArr     evtTrgImg    ;
         public event TferFeedBackPos   evtFedBckPos ;
         public event TferScanStatus    evtScanEnd   ;
@@ -102,6 +101,26 @@ namespace PLImg_V2
 
             StgEnable = new Dictionary<string , Action>();
             foreach ( var item in GD.YXZ ) StgEnable.Add( item , Stg.Enable( item ) );
+
+            RunStgBuffer = new Action<ScanConfig>( ( config ) => {
+                if ( config == ScanConfig.Trigger_4 )
+                { Stg.StartTrigger( 4 ); }
+                else
+                {
+                    Stg.StartTrigger( 3 );
+                }
+            } );
+
+            StopStgBuffer = new Action<ScanConfig>( ( config ) => {
+                if ( config == ScanConfig.Trigger_4 )
+                { Stg.StopTrigger( 4 ); }
+                else
+                {
+                    Stg.StopTrigger( 3 );
+                }
+            } );
+
+
         }
 
         public void InitData()
@@ -112,47 +131,32 @@ namespace PLImg_V2
         #endregion
 
         #region GrabDoneEvent Method
-        void GrabDoneEvt_Non( object sender , SapXferNotifyEventArgs evt )
+        void GrabDoneEvt_Non( object sender, SapXferNotifyEventArgs evt )
         {
-            Console.WriteLine( "IN Evt" );
-            switch ( ScanStatus )
-            {
-                case ScanState.Stop:
-                    ScanStatus = ScanState.Wait;
-
-                    break;
-
-                case ScanState.Pause:
-                    PauseProcess( LineCount );
-                    break;
-
-                case ScanState.Start:
-                    StartProcess( ScanType );
-                    break;
-
-                default:
-                    evtRealimg( Reshape2D( FullBuffdata() , 1 ) );
-                    Task.Run( () => TferVariance( SingleBuffdata() ) );
-                    break;
-            }
+            evtRealimg( Reshape2D( FullBuffdata(), 1 ) );
+            Task.Run( () => TferVariance( SingleBuffdata() ) );
         }
 
         void GrabDoneEvt_Trg( object sender , SapXferNotifyEventArgs evt )
         {
+            Console.WriteLine( "Grab Done in " );
             var Buf2Img = FnBuff2Img( Cam.GetBuffWH()["H"] , Cam.GetBuffWH()["W"] );
             var currentbuff = FullBuffdata();
-            evtTrgImg( Buf2Img( currentbuff , 1 ) , TrigCount ); // 1 Trigger = 1 Buffer
+            var temp = Buf2Img( currentbuff , 1 );
+            evtTrgImg( temp, TrigCount ); // 1 Trigger = 1 Buffer
             Freeze();
             TrigCount += 1;
             if ( TrigCount < TrigLimit )
             {
-                StgReadyTrigScan( TrigCount );
+                Console.WriteLine( "Grab Done IF in " );
+                StgReadyTrigScan( TrigCount , CurrentConfig );
                 Grab();
                 System.Threading.Thread.Sleep( 100 );
-                MoveXYstg( "Y" , TrigScanData.EndYPos[CurrentConfig] );
+                ScanMoveXYstg( "Y" , TrigScanData.EndYPos[CurrentConfig] , TrigScanData.Scan_Stage_Speed );
             }
             else {
                 evtScanEnd();
+                StopStgBuffer( CurrentConfig );
             }
         }
         #endregion
@@ -181,6 +185,14 @@ namespace PLImg_V2
             Stg.SetSpeed( axis )( 200 );
             Stg.Moveabs ( axis )( point );
         }
+
+        public void ScanMoveXYstg( string axis, double point , double scanspeed )
+        {
+            Stg.SetSpeed( axis )( scanspeed );
+            Stg.Moveabs( axis )( point );
+        }
+
+
         public void MoveZstg( double point )
         {
             Stg.SetSpeed( "Z" )( 10 );
@@ -224,58 +236,6 @@ namespace PLImg_V2
 
         #endregion
 
-        public void ReadyNonTrigScan( ) {
 
-        }
-
-        public void ScanStart_Non( ) {
-
-        }
-
-     
-
-        public void StartTrigScan( ScanConfig config ) {
-            CurrentConfig = config;
-            TrigLimit = SetTriggerLimit( config );
-            TrigCount = 0;
-            StgReadyTrigScan( 0 );
-
-            System.Threading.Thread.Sleep( 100 );
-            ResetCamCofnig( config );
-
-            Grab();
-            System.Threading.Thread.Sleep( 100 );
-
-            MoveXYstg( "Y" , TrigScanData.EndYPos[config] );
-        }
-
-        void StgReadyTrigScan(int triggerNum)
-        {
-            MoveXYstg( "Y" , TrigScanData.StartYPos );
-            MoveXYstg( "X" , TrigScanData.StartXPos + TrigScanData.XStep_Size* triggerNum );
-            Stg.WaitEps( "Y" )( TrigScanData.StartYPos , 0.005 );
-            Stg.WaitEps( "X" )( TrigScanData.StartYPos , 0.005 );
-            Stg.SetSpeed( "Y" )( TrigScanData.Scan_Stage_Speed);
-        }
-
-        void ResetCamCofnig(ScanConfig config) {
-            Reconnector[config]();
-            Cam.EvtResist(Cam.Xfer , GrabDoneEvt_Trg);
-        }
-
-        int SetTriggerLimit( ScanConfig config ) {
-            switch ( config ) {
-                case ScanConfig.Trigger_1:
-                    return 1;
-
-                case ScanConfig.Trigger_2:
-                    return 2;
-
-                case ScanConfig.Trigger_4:
-                    return 4;
-                default:
-                    return 1;
-            }
-        }
     }
 }

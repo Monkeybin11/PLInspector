@@ -47,8 +47,6 @@ namespace PLImg_V2
         ImageBox[] TrgImgBoxArr;
         Dictionary<ScanConfig, System.Windows.Controls.RadioButton> SampleConfig;
         Dictionary<string,StageEnableState> StgState;
-        Action<ScanMode> SetScanInfo;
-
        
         public MainWindow()
         {
@@ -104,15 +102,6 @@ namespace PLImg_V2
         #endregion
 
         #region Init
-        void InitFunc()
-        {
-            SetScanInfo = Core.ScanInfoSet(
-                         ( int ) nudStartXPos.Value , ( int ) nudStartYPos.Value , ( int ) nudEndYPos.Value , ( double ) nudXstep.Value ,
-                         -1 , -1 ,
-                         ( int ) nudScanbuffNum.Value , ( int ) nudScanUnitNum.Value , ( int ) nudScanLineNum.Value ,
-                         ( int ) nudScanSpeed.Value );
-        }
-
 
         void InitCore( )
         {
@@ -123,7 +112,6 @@ namespace PLImg_V2
             Core.evtRealimg       += new TferImgArr( DisplayRealTime );
             Core.evtTrgImg        += new TferTrgImgArr( DisplayTrgImg );
             Core.evtSV            += new TferNumber( DisplayAF );
-            Core.evtMapImg        += new TferSplitImgArr( DisplayFullScanImg );
             Core.evtFedBckPos     += new TferFeedBackPos( DisplayPos );
             Core.evtScanEnd       += new TferScanStatus( ( ) => { Mouse.OverrideCursor = null; } );
             Task.Run(()=>Core.GetFeedbackPos());
@@ -175,19 +163,9 @@ namespace PLImg_V2
 
         void InitViewWin( )
         {
-            nudStartXPos.Value = 100;
-            nudStartYPos.Value = 50;
-            nudEndYPos.Value = 100;
-            nudXstep.Value = 28.300;
-
             nudExtime.Value = 2400;
             nudlinerate.Value = 400;
-
-            nudScanbuffNum.Value = 11;
-            nudScanUnitNum.Value = 2;
-            nudScanLineNum.Value = 2;
             nudScanSpeed.Value = 1;
-
             nudGoXPos.Value = 100;
             nudGoYPos.Value = 50;
             nudGoZPos.Value = 29.500;
@@ -215,51 +193,6 @@ namespace PLImg_V2
         #endregion
 
         #region MainWindowEvent
-        private void btnLineScan_Click(object sender, RoutedEventArgs e)
-        {
-            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-            StartScan( ScanMode.SingleLine );
-        }
-        private void btnFullScan_Click(object sender, RoutedEventArgs e)
-        {
-            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-            StartScan( ScanMode.MultiLine );
-        }
-
-        void StartScan( ScanMode mode ) {
-            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-            ClearImgBox();
-            //ScanDataSet( mode );
-            Core.ReadyPos( mode == ScanMode.MultiLine || mode == ScanMode.SingleLine ? ScanTypes.NonTrig : ScanTypes.Trig );
-            Core.ScanStart();
-        }
-
-        /*
-        void ScanDataSet( ScanMode mode ) {
-            if ( mode == ScanMode.MultiLine || mode == ScanMode.SingleLine )
-            {
-                Core.ScanInfoSet(
-                ( int ) nudStartXPos.Value , ( int ) nudStartYPos.Value , ( int ) nudEndYPos.Value , ( double ) nudXstep.Value ,
-                -1 , -1 ,
-                ( int ) nudScanbuffNum.Value , ( int ) nudScanUnitNum.Value , ( int ) nudScanLineNum.Value ,
-                ( int ) nudScanSpeed.Value )( mode );
-            }
-            else if ( mode == ScanMode.TrgCustom )
-            {
-                Core.ScanInfoSet(
-                    ( int ) nudTrgYStart.Value ,
-                    ( int ) nudTrgBuffNum.Value ,
-                    ( int ) nudTrgXStep.Value ,
-                    ( int ) nudTrgLineNum.Value ,
-                    ( int ) nudTrgScanSpeed.Value)(mode);
-            }
-            else
-            {
-                Core.ScanInfoSet( ( int ) nudTrgYStart.Value )( mode );
-            }
-        }
-        */
-
         void ScanStart( ) { Mouse.OverrideCursor = Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;}
         void ScanEnd( ) { Mouse.OverrideCursor = null; }
 
