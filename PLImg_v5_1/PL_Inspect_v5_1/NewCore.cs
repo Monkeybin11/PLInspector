@@ -32,19 +32,19 @@ namespace PLImaging
         {
         }
 
-        public async void DisplayBuf(ImageBrush img)
+        public void DisplayBuf(ImageBrush img)
         {
 
 
         }
 
-        public async void Step2()
+        public void Step2()
         {
             //var result = await FC.CombineImage( null , 1 , 2 );
-
+            
         }
 
-        public async void Processing()
+        public void Processing()
         {
 
         }
@@ -52,7 +52,7 @@ namespace PLImaging
 
         public async void StartScan(Tuple<ScanConfig,int,int> input)
         {
-            Tdata = new ScanTempData( input.Item2  , input.Item1);
+            Tdata = new ScanTempData( input.Item1  , input.Item2);
             await FC.EpiScanAsync( input.Item1 ) ;
         }
 
@@ -66,7 +66,6 @@ namespace PLImaging
              4. SeperatedResizedImg;
              5. EpiDefectList
              */
-           
 
             if ( Tdata.BufferCount >= Tdata.BufferLimit 
                  || Tdata.CurrentStatus == ScanTempData.TaskStatus.Stopped )
@@ -108,8 +107,9 @@ namespace PLImaging
                                                            , Tdata.EpiDefectList [ bufNum ].Count ));
                                                            //4.SeperatedBoxedImg
             });
-            try { getdefectInfo.Wait(); }
-            catch ( AggregateException aex ) { AfterAggregateException( aex ); return; }
+
+            //try { getdefectInfo.Wait(); }
+            //catch ( AggregateException aex ) { AfterAggregateException( aex ); return; }
 
             if ( Tdata.BufferCount == Tdata.BufferLimit )
             {
@@ -120,26 +120,26 @@ namespace PLImaging
 
         public async Task ProcAfterScanDone()
         {
-            var combineImg    = Tdata.SeperatedImg.Map( x => FC.CombineImageAsync(x , Tdata.ResizeHeight , Tdata.ResizeWidth ));
-            var shiftedresult = Tdata.EpiDefectList.Map( x => FC.ShiftResult(x) );
-            var combineBox    = Tdata.SeperatedBoxedImg.Map( x=> FC.CombineBoxImg(x) );
+            var combineImg    = Tdata.SeperatedImg.Map( x => 
+                                                        FC.CombineImageAsync(x 
+                                                                             , Tdata.ResizeHeight 
+                                                                             , Tdata.ResizeWidth ));
+            var shiftedresult = Tdata.EpiDefectList.Map( x => 
+                                                         FC.ShiftResult(x) );
+            var combineBox    = Tdata.SeperatedBoxedImg.Map( x=> 
+                                                             FC.CombineBoxImg(x) );
 
             var alltask = Task.WhenAll( combineImg , shiftedresult ,combineBox );
-            try { alltask.Wait(); }
+            try { await alltask; }
             catch ( AggregateException aex ) { AfterAggregateException( aex ); return; }
-
 
             combineBox.Result.Act( x => Tdata.ResizedBoxedImg = x )
                              .Act( x => evtOriginResized( BitmapSrcConvert.ToBitmapSource( new Image<Bgr,byte>(x))) );
 
             combineImg.Result.Act( x => Tdata.ResizedImg = x )
-                             .Act( x => evtBoxResized( BitmapSrcConvert.ToBitmapSource( new Image<Bgr , byte>( x ) ) ) ) );
+                             .Act( x => evtBoxResized( BitmapSrcConvert.ToBitmapSource( new Image<Bgr , byte>( x ) ) ) );
 
             shiftedresult.Result.Act( x => Tdata.EpiFullDefect = x );
-
-
-
-
         }
 
 

@@ -29,7 +29,7 @@ namespace PLImaging
 
         // DefectInfo
 
-        public ScanTempData(int bufflimit , ScanConfig type) 
+        public ScanTempData( ScanConfig type, int bufflimit ) 
         {
             CurrentType = type;
             BufferLimit = bufflimit;

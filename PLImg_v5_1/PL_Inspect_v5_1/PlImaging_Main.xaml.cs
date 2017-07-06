@@ -41,11 +41,10 @@ namespace PLImaging
 
         public void MenuClick( object sender , RoutedEventArgs e )
         {
-            
             MenuItem mi = sender as MenuItem;
             var procType = mi.Name.Match()
-                                  .With( x => x == "mi1inch" , Tuple.Create(ScanConfig.Trigger_1 , 1 ,  3))
-                                  .With( x => x == "mi2inch" , Tuple.Create(ScanConfig.Trigger_2 , 1 ,  3) )
+                                  .With( x => x == "mi1inch" , Tuple.Create(ScanConfig.Trigger_1 , 3 ,  1))
+                                  .With( x => x == "mi2inch" , Tuple.Create(ScanConfig.Trigger_2 , 3 ,  1))
                                   .Do();
             Core.StartScan( procType );
         }
@@ -53,7 +52,8 @@ namespace PLImaging
 
         void MenuScanMethodRegist()
         {
-            Func<Tuple<ScanConfig,int,int>,Task> scanStart = async config => Core.StartScan(config);
+            //var scanStart = new Func<Tuple<ScanConfig, int, int>, Task>( 
+            //         async config => await Core.StartScan(config));
         }
 
         void Display()

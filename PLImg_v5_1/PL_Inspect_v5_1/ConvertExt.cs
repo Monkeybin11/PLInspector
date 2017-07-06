@@ -31,9 +31,7 @@ namespace PLImaging
                      .With( x => x == ScanConfig.Trigger_2 , 36000 )
                      .With( x => x == ScanConfig.Trigger_4 , 36000 )
                      .Do();
-
         }
-
     }
 
     public static class BitmapSrcConvert
